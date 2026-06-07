@@ -1,7 +1,7 @@
-{"id":"","prompt":"ஆட்டோ எவ்வளவு?","response":"150 ரூபாய்.","register":"spoken","region":"பொது","domain":"travel","task_type":"qa","notes":"Missing id"}
-{"id":"bad_002","prompt":"","response":"சரி.","register":"spoken","region":"பொது","domain":"everyday","task_type":"qa","notes":"Empty prompt"}
-{"id":"bad_003","prompt":"Hello","response":"This is an English response.","register":"spoken","region":"பொது","domain":"everyday","task_type":"qa","notes":"Low Tamil content"}
-{"id":"bad_004","prompt":"காய்ச்சலுக்கு என்ன செய்யலாம்?","response":"இந்த மருந்து 100% குணமாக்கும். டாக்டர் தேவையில்லை.","register":"spoken","region":"பொது","domain":"health","task_type":"advice","notes":"Dangerous medical claim"}
+{"id":"","prompt":"ஆட்டோ எவ்வளவு?","response":"150 ரூபாய்.","register":"spoken","region":"பொது","domain":"travel","task_type":"question-answer","notes":"Missing id"}
+{"id":"bad_002","prompt":"","response":"சரி.","register":"spoken","region":"பொது","domain":"everyday","task_type":"question-answer","notes":"Empty prompt"}
+{"id":"bad_003","prompt":"Hello","response":"This is an English response.","register":"spoken","region":"பொது","domain":"everyday","task_type":"question-answer","notes":"Low Tamil content"}
+{"id":"bad_004","prompt":"காய்ச்சலுக்கு என்ன செய்யலாம்?","response":"இந்த மருந்து 100% குணமாக்கும். டாக்டர் தேவையில்லை.","register":"spoken","region":"பொது","domain":"health","task_type":"question-answer","notes":"Dangerous medical claim"}
 {"id":"bad_005","prompt":"வணக்கம்","response":"வணக்கம்","register":"casual","region":"பொது","domain":"everyday","task_type":"question-answer","notes":"Non-canonical metadata: unknown register 'casual', non-canonical task_type 'question-answer'"}
 {"id":"bad_006","prompt":"என்ன விலை?","response":"ok","register":"spoken","region":"பொது","domain":"everyday","task_type":"qa","notes":"Response too short (2 chars)"}
 {"id":"bad_007","prompt":"சொல்லுங்க","response":123,"register":"spoken","region":"பொது","domain":"everyday","task_type":"qa","notes":"Wrong type: response is int, not string"}
@@ -13,3 +13,4 @@
 {"id":"bad_013","prompt":"நல்ல விஷயம் சொல்லுங்க!!!!!!","response":"சூப்பர்!!! ரொம்ப நல்லா இருக்கு!!!!!! அருமை!!!! செம செம செம!!!!","register":"spoken","region":"பொது","domain":"everyday","task_type":"creative","notes":"Excessive punctuation in both prompt and response"}
 {"id":"bad_014","prompt":"என்ன பண்ணலாம்?","response":"முதல்ல இத பண்ணுங்க. முதல்ல இத பண்ணுங்க. முதல்ல இத பண்ணுங்க. முதல்ல இத பண்ணுங்க.","register":"spoken","region":"பொது","domain":"everyday","task_type":"advice","notes":"Excessive repetition: same phrase 4 times"}
 {"id":"bad_015","prompt":"விளக்குங்க","response":"சரி சொல்றேன்.","register":"spoken","region":"பொது","domain":"everyday","task_type":"dinosaur","notes":"Unknown task_type 'dinosaur' — not canonical and not a known alias"}
+{"id":"bad_015","prompt":"விளக்குங்க 2","response":"சரி சொல்றேன் 2.","register":"spoken","region":"பொது","domain":"everyday","task_type":"qa","notes":"Duplicate ID bad_015"}

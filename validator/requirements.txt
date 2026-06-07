@@ -1,0 +1,14 @@
+# TamilLM Validator — Dependencies
+# =================================
+#
+# Core: zero external dependencies.
+# The validator uses only the Python 3.10+ standard library.
+#
+# Dev / testing dependencies are listed below and can be installed with:
+#
+#   pip install -r requirements.txt
+#
+
+# ── Testing ──────────────────────────────────────────────────────
+pytest>=7.0,<9.0
+pytest-cov>=4.0,<6.0

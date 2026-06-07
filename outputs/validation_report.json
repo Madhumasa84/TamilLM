@@ -1,0 +1,386 @@
+{
+  "summary": {
+    "total_records": 50,
+    "valid_records": 50,
+    "invalid_records": 0,
+    "aggregate_quality_score": 99.9,
+    "errors": 0,
+    "warnings": 1,
+    "info": 0
+  },
+  "quality_score_distribution": {
+    "90-100": 50,
+    "80-89": 0,
+    "70-79": 0,
+    "60-69": 0,
+    "50-59": 0,
+    "0-49": 0
+  },
+  "distributions": {
+    "register": {
+      "formal": 21,
+      "spoken": 18,
+      "literary": 11
+    },
+    "domain": {
+      "everyday": 8,
+      "technical": 7,
+      "current_affairs": 7,
+      "culture": 5,
+      "food": 3,
+      "travel": 3,
+      "health": 3,
+      "education": 3,
+      "workplace": 3,
+      "literature": 3,
+      "history": 3,
+      "government": 2
+    },
+    "region": {
+      "Generic Tamil Nadu": 46,
+      "Chennai": 2,
+      "Madurai": 1,
+      "Tirunelveli": 1
+    },
+    "task_type": {
+      "qa": 11,
+      "explanation": 11,
+      "rewrite": 9,
+      "summarization": 7,
+      "creative": 6,
+      "classification": 5,
+      "advice": 1
+    }
+  },
+  "coverage": {
+    "missing_registers": [],
+    "missing_task_types": [
+      "comparison",
+      "reasoning"
+    ],
+    "missing_domains": [
+      "agriculture",
+      "entertainment",
+      "finance",
+      "law",
+      "science",
+      "sports"
+    ],
+    "coverage_warnings": [
+      "Only 1 example(s) for task_type='advice'",
+      "No examples for register='formal' × task_type='advice'",
+      "No examples for register='formal' × task_type='creative'",
+      "No examples for register='literary' × task_type='advice'",
+      "No examples for register='literary' × task_type='classification'",
+      "Only 1 example for register='literary' × task_type='rewrite'",
+      "Only 1 example for register='literary' × task_type='summarization'",
+      "Only 1 example for register='spoken' × task_type='advice'",
+      "Only 1 example for register='spoken' × task_type='classification'"
+    ],
+    "register_x_task_type": {
+      "formal": {
+        "advice": 0,
+        "classification": 4,
+        "comparison": 0,
+        "creative": 0,
+        "explanation": 5,
+        "qa": 4,
+        "reasoning": 0,
+        "rewrite": 4,
+        "summarization": 4
+      },
+      "literary": {
+        "advice": 0,
+        "classification": 0,
+        "comparison": 0,
+        "creative": 3,
+        "explanation": 3,
+        "qa": 3,
+        "reasoning": 0,
+        "rewrite": 1,
+        "summarization": 1
+      },
+      "spoken": {
+        "advice": 1,
+        "classification": 1,
+        "comparison": 0,
+        "creative": 3,
+        "explanation": 3,
+        "qa": 4,
+        "reasoning": 0,
+        "rewrite": 4,
+        "summarization": 2
+      }
+    }
+  },
+  "duplicates": {
+    "total": 0,
+    "exact": 0,
+    "near": 0
+  },
+  "safety_warnings": [],
+  "issues_by_check": {
+    "naturalness.unnatural_formatting": 1
+  },
+  "record_details": [
+    {
+      "id": "sft_001",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_002",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_003",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_004",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_005",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_006",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_007",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_008",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_009",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_010",
+      "is_valid": true,
+      "quality_score": 95,
+      "issues": [
+        {
+          "check": "naturalness.unnatural_formatting",
+          "severity": "warning",
+          "message": "Response contains 8 list items; may indicate formulaic generation",
+          "field": "response",
+          "suggestion": "Consider whether a list-heavy format is natural for this register and task type"
+        }
+      ]
+    },
+    {
+      "id": "sft_011",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_012",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_013",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_014",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_015",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_016",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_017",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_018",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_019",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_020",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_021",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_022",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_023",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_024",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_025",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_026",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_027",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_028",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_029",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_030",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_031",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_032",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_033",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_034",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_035",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_036",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_037",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_038",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_039",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_040",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_041",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_042",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_043",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_044",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_045",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_046",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_047",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_048",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_049",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_050",
+      "is_valid": true,
+      "quality_score": 100
+    }
+  ]
+}

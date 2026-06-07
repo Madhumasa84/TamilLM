@@ -3,4 +3,9 @@ __pycache__/
 *.pyc
 *.pyo
 *.log
-outputs/
+.env
+*.egg-info/
+dist/
+build/
+outputs/clean_bad.jsonl
+outputs/report_bad.json
