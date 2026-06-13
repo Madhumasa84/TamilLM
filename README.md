@@ -62,6 +62,14 @@ Two pairs covering the same topic in different dialects (Coimbatore vs Tirunelve
 **Character trigrams over word n-grams.**  
 Tamil is agglutinative. Suffixes attach directly to stems - "போகிறான்" and "போகிறாள்" differ by one character but share most of their structure. Character trigrams capture this shared substructure and correctly measure similarity across inflected forms.
 
+### P0 Fix: Duplicate Detection Across Schema-Invalid Records
+
+Duplicate detection previously ran only on records that passed schema validation — schema-errored records were short-circuited before reaching the DuplicateDetector, so their text was never registered. A later record with the same prompt as an earlier schema-invalid record would not be flagged.
+
+The fix uses two passes. Pass 1 registers every record's prompt and response text (when the field exists, is a string, and is non-empty) regardless of schema validity, using the record's id or a line-number locator (`<line_N>`) when id is missing. Pass 2 runs the full check suite as before — schema errors still short-circuit content checks, but duplicate findings from Pass 1 are added alongside any schema errors rather than replacing them.
+
+`schema.duplicate_id` findings are now included in the report's `duplicate_count`, so duplicate IDs are reflected in the summary total, not only in per-record details.
+
 **Exit 0 on data failures, exit 1 on infrastructure failures.**  
 A record failing validation is a data finding, not a tool failure. The validator exits nonzero only when it cannot do its job, file not found, malformed JSONL it cannot parse, missing dependency.
 
