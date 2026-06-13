@@ -775,55 +775,29 @@ class DuplicateDetector:
         self.exact_count: int = 0
         self.near_count: int = 0
 
-    def check(self, record: dict[str, Any]) -> list[ValidationIssue]:
-        """Check a single record for duplicates against all prior records.
+    def register(self, record_id: str, text: str, field_name: str) -> None:
+        """Register text for future lookup without checking."""
+        normalized = normalize_for_dedup(text)
+        
+        seen_exact = self._seen_prompts if field_name == "prompt" else self._seen_responses
+        seen_trigrams = self._prompt_trigrams if field_name == "prompt" else self._response_trigrams
+        
+        if normalized not in seen_exact:
+            seen_exact[normalized] = record_id
+            seen_trigrams[record_id] = (normalized, char_trigrams(normalized))
 
-        Must be called **in order** — each call updates internal state.
-        """
-        issues: list[ValidationIssue] = []
-        record_id: str = record.get("id", "<missing_id>")
-        prompt: str = record.get("prompt", "")
-        response: str = record.get("response", "")
-
-        if prompt:
-            issues.extend(
-                self._check_field(
-                    record_id=record_id,
-                    text=prompt,
-                    field_name="prompt",
-                    seen_exact=self._seen_prompts,
-                    seen_trigrams=self._prompt_trigrams,
-                )
-            )
-
-        if response:
-            issues.extend(
-                self._check_field(
-                    record_id=record_id,
-                    text=response,
-                    field_name="response",
-                    seen_exact=self._seen_responses,
-                    seen_trigrams=self._response_trigrams,
-                )
-            )
-
-        return issues
-
-    def _check_field(
-        self,
-        *,
-        record_id: str,
-        text: str,
-        field_name: str,
-        seen_exact: dict[str, str],
-        seen_trigrams: dict[str, tuple[str, set[str]]],
+    def check_against_registered(
+        self, record_id: str, text: str, field_name: str
     ) -> list[ValidationIssue]:
-        """Check one field (prompt or response) for duplicates."""
+        """Checks this text against all previously registered texts."""
         issues: list[ValidationIssue] = []
         normalized = normalize_for_dedup(text)
 
+        seen_exact = self._seen_prompts if field_name == "prompt" else self._seen_responses
+        seen_trigrams = self._prompt_trigrams if field_name == "prompt" else self._response_trigrams
+
         # ── Exact duplicate ──────────────────────────────────────────
-        if normalized in seen_exact:
+        if normalized in seen_exact and seen_exact[normalized] != record_id:
             original_id = seen_exact[normalized]
             issues.append(ValidationIssue(
                 record_id=record_id,
@@ -838,12 +812,11 @@ class DuplicateDetector:
             self.exact_count += 1
             return issues  # Skip near-dupe check — exact is stronger
 
-        # Register this text for future exact lookups.
-        seen_exact[normalized] = record_id
-
         # ── Near duplicate ───────────────────────────────────────────
         trigrams = char_trigrams(normalized)
         for other_id, (_other_text, other_trigrams) in seen_trigrams.items():
+            if other_id == record_id:
+                continue
             similarity = jaccard_similarity(trigrams, other_trigrams)
             if similarity >= self._threshold:
                 issues.append(ValidationIssue(
@@ -861,9 +834,6 @@ class DuplicateDetector:
                 ))
                 self.near_count += 1
                 break  # One near-dupe match is enough to flag
-
-        # Register trigrams for future near-dupe lookups.
-        seen_trigrams[record_id] = (normalized, trigrams)
 
         return issues
 
@@ -906,14 +876,28 @@ def run_all_checks(
         issue.severity == Severity.ERROR for issue in schema_issues
     )
 
-    # Steps 2–7: content-level checks (skipped on schema errors)
+    # Steps 2–6: content-level checks (skipped on schema errors)
     if not has_schema_errors:
         all_issues.extend(check_metadata(record))
         all_issues.extend(check_language_quality(record))
         all_issues.extend(check_naturalness(record))
         all_issues.extend(check_consistency(record))
         all_issues.extend(check_safety(record))
-        all_issues.extend(duplicate_detector.check(record))
+
+    # Step 7: Duplicate detection (runs regardless of schema validity
+    # as long as the prompt/response fields are valid strings)
+    record_id = record.get("id", "<missing_id>")
+    prompt = record.get("prompt")
+    response = record.get("response")
+
+    if isinstance(prompt, str) and prompt.strip():
+        all_issues.extend(duplicate_detector.check_against_registered(
+            record_id=record_id, text=prompt, field_name="prompt"
+        ))
+    if isinstance(response, str) and response.strip():
+        all_issues.extend(duplicate_detector.check_against_registered(
+            record_id=record_id, text=response, field_name="response"
+        ))
 
     # Derive validity and quality score
     is_valid = not any(

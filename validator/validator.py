@@ -197,6 +197,27 @@ class SFTValidator:
         """
         self._results = []
 
+        # Pass 1: Register all prompts/responses for dedup
+        # regardless of schema validity
+        for i, record in enumerate(records):
+            record_id = record.get("id")
+            if not record_id or not str(record_id).strip():
+                record_id = f"<line_{i+1}>"
+                record["id"] = record_id
+            
+            prompt = record.get("prompt")
+            response = record.get("response")
+            
+            # Only register if field exists, is string, non-empty
+            if isinstance(prompt, str) and prompt.strip():
+                self._duplicate_detector.register(
+                    record_id, prompt, "prompt"
+                )
+            if isinstance(response, str) and response.strip():
+                self._duplicate_detector.register(
+                    record_id, response, "response"
+                )
+
         # Check for duplicate IDs first
         seen_ids: dict[str, int] = {}
         for i, record in enumerate(records):
@@ -418,7 +439,7 @@ class SFTValidator:
         duplicate_issues = [
             issue
             for issue in all_issues
-            if issue.check_name.startswith("duplicate.")
+            if issue.check_name.startswith("duplicate.") or issue.check_name == "schema.duplicate_id"
         ]
 
         error_count = sum(
@@ -568,9 +589,8 @@ class SFTValidator:
         invalid = report.invalid_records
         score = report.aggregate_quality_score
 
-        print("\n" + "═" * 60)
+        print("\n")
         print("  Tamil SFT Validation Report")
-        print("═" * 60)
         print(f"  Records:  {total} total, {valid} valid, {invalid} invalid")
         print(f"  Quality:  {score}/100 (aggregate)")
         print(
@@ -591,4 +611,3 @@ class SFTValidator:
             n = len(report.coverage.coverage_warnings)
             print(f"  Coverage: {n} coverage warning(s)")
 
-        print("═" * 60 + "\n")
