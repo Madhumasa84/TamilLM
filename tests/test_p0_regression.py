@@ -117,3 +117,100 @@ def test_malformed_prompt_does_not_crash_or_pollute_dedup():
         "P0 REGRESSION: Malformed integer prompt polluted "
         "dedup state"
     )
+
+
+def test_empty_id_record_remains_invalid():
+    """
+    Regression: line-number locator must not be written back into
+    the record before schema validation. An empty id must still
+    produce a schema error and keep the record invalid.
+    """
+    from validator.validator import SFTValidator
+
+    records = [
+        {
+            "id": "",  # empty id — must produce schema error
+            "prompt": "ஆட்டோ எவ்வளவு?",
+            "response": "மீட்டர் படி கொடுங்க.",
+            "register": "spoken",
+            "region": "Generic Tamil Nadu",
+            "domain": "travel",
+            "task_type": "qa",
+        }
+    ]
+    validator = SFTValidator()
+    results = validator.validate(records)
+
+    assert len(results) == 1
+    assert results[0].is_valid == False, (
+        "REGRESSION: Empty id record was marked valid — "
+        "line-number locator must not overwrite the original id "
+        "before schema validation"
+    )
+
+    error_checks = [
+        i.check_name for i in results[0].issues
+        if i.severity.value == "error"
+    ]
+    assert any("id" in c or "missing" in c or "empty" in c
+               for c in error_checks), (
+        "REGRESSION: Empty id did not produce a schema error. "
+        f"Got issues: {error_checks}"
+    )
+
+
+def test_empty_id_record_participates_in_dedup():
+    """
+    Regression: even though empty id records are invalid,
+    their prompt/response text must still be registered for
+    deduplication using the line-number locator.
+    """
+    from validator.validator import SFTValidator
+
+    records = [
+        {
+            "id": "",  # empty id
+            "prompt": "ஆட்டோ எவ்வளவு கட்டணம்?",
+            "response": "மீட்டர் படி கொடுங்க.",
+            "register": "spoken",
+            "region": "Generic Tamil Nadu",
+            "domain": "travel",
+            "task_type": "qa",
+        },
+        {
+            "id": "rec_002",
+            "prompt": "ஆட்டோ எவ்வளவு கட்டணம்?",  # exact duplicate
+            "response": "பேரம் பேசுங்க.",
+            "register": "spoken",
+            "region": "Generic Tamil Nadu",
+            "domain": "travel",
+            "task_type": "qa",
+            "notes": "duplicate of empty-id record"
+        },
+    ]
+    validator = SFTValidator()
+    validator.validate(records)
+    report = validator.build_report()
+
+    assert report.duplicate_count > 0, (
+        "REGRESSION: Prompt duplicate was not detected when "
+        "the earlier record had an empty id"
+    )
+
+
+def test_print_summary_is_ascii_safe():
+    """
+    Regression: _print_summary must not contain any non-ASCII
+    characters that would crash Windows cp1252 stdout.
+    """
+    import inspect
+    from validator.validator import SFTValidator
+
+    src = inspect.getsource(SFTValidator._print_summary)
+    try:
+        src.encode('ascii')
+    except UnicodeEncodeError as e:
+        pytest.fail(
+            f"REGRESSION: _print_summary contains non-ASCII "
+            f"character that will crash Windows cp1252 stdout: {e}"
+        )

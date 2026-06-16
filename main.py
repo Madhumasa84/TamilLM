@@ -1,8 +1,17 @@
 # main.py
 import argparse
+import io
 import sys
 from pathlib import Path
 from validator.validator import SFTValidator
+
+# Ensure stdout is UTF-8 on all platforms (defense-in-depth for Windows cp1252)
+if hasattr(sys.stdout, 'buffer'):
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer,
+        encoding='utf-8',
+        errors='replace',
+    )
 
 def run_pipeline(input_path: str, clean_path: str, report_path: str):
     """Executes the validation pipeline and provides console feedback."""

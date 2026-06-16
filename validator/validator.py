@@ -198,38 +198,47 @@ class SFTValidator:
         self._results = []
 
         # Pass 1: Register all prompts/responses for dedup
-        # regardless of schema validity
+        # regardless of schema validity.
+        # IMPORTANT: We must NOT mutate record["id"] here — the original
+        # record dict must reach check_schema() unchanged so that empty/
+        # missing id fields still produce schema errors.
         for i, record in enumerate(records):
-            record_id = record.get("id")
-            if not record_id or not str(record_id).strip():
-                record_id = f"<line_{i+1}>"
-                record["id"] = record_id
-            
+            raw_id = record.get("id")
+            if not raw_id or not str(raw_id).strip():
+                record_id_for_reporting = f"<line_{i+1}>"
+            else:
+                record_id_for_reporting = raw_id
+
             prompt = record.get("prompt")
             response = record.get("response")
-            
+
             # Only register if field exists, is string, non-empty
             if isinstance(prompt, str) and prompt.strip():
                 self._duplicate_detector.register(
-                    record_id, prompt, "prompt"
+                    record_id_for_reporting, prompt, "prompt"
                 )
             if isinstance(response, str) and response.strip():
                 self._duplicate_detector.register(
-                    record_id, response, "response"
+                    record_id_for_reporting, response, "response"
                 )
 
-        # Check for duplicate IDs first
+        # Check for duplicate IDs first.
+        # Use the same reporting-id logic (never mutate the record).
         seen_ids: dict[str, int] = {}
         for i, record in enumerate(records):
-            record_id = record.get("id", f"<line_{i+1}>")
-            if record_id in seen_ids:
+            raw_id = record.get("id")
+            record_id_for_reporting = (
+                raw_id if raw_id and str(raw_id).strip()
+                else f"<line_{i+1}>"
+            )
+            if record_id_for_reporting in seen_ids:
                 # Mark this record with a duplicate ID error
                 record["_duplicate_id"] = (
-                    f"ID '{record_id}' already seen at "
-                    f"record {seen_ids[record_id] + 1}"
+                    f"ID '{record_id_for_reporting}' already seen at "
+                    f"record {seen_ids[record_id_for_reporting] + 1}"
                 )
             else:
-                seen_ids[record_id] = i
+                seen_ids[record_id_for_reporting] = i
 
         for record in records:
             if "_parse_error" in record:
@@ -601,7 +610,7 @@ class SFTValidator:
         print(f"  Dupes:    {report.duplicate_count} duplicate findings")
 
         if report.safety_warnings:
-            print(f"  Safety:   {len(report.safety_warnings)} warning(s) ⚠")
+            print(f"  Safety:   {len(report.safety_warnings)} warning(s) [!]")
 
         if report.coverage.missing_task_types:
             missing = ", ".join(report.coverage.missing_task_types)
