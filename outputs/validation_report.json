@@ -18,23 +18,23 @@
   },
   "distributions": {
     "register": {
-      "formal": 21,
-      "spoken": 18,
-      "literary": 11
+      "spoken_colloquial": 16,
+      "modern_formal": 8,
+      "culture_history": 8,
+      "news_formal": 7,
+      "technical_explanatory": 6,
+      "literary_prose": 3,
+      "tanglish_code_switched": 2
     },
     "domain": {
-      "everyday": 8,
+      "everyday": 17,
       "technical": 7,
-      "current_affairs": 7,
+      "news": 7,
+      "social": 5,
       "culture": 5,
-      "food": 3,
-      "travel": 3,
-      "health": 3,
       "education": 3,
-      "workplace": 3,
       "literature": 3,
-      "history": 3,
-      "government": 2
+      "history": 3
     },
     "region": {
       "Generic Tamil Nadu": 46,
@@ -55,61 +55,117 @@
   "coverage": {
     "missing_registers": [],
     "missing_task_types": [
-      "comparison",
-      "reasoning"
+      "style_transfer"
     ],
-    "missing_domains": [
-      "agriculture",
-      "entertainment",
-      "finance",
-      "law",
-      "science",
-      "sports"
-    ],
+    "missing_domains": [],
     "coverage_warnings": [
       "Only 1 example(s) for task_type='advice'",
-      "No examples for register='formal' × task_type='advice'",
-      "No examples for register='formal' × task_type='creative'",
-      "No examples for register='literary' × task_type='advice'",
-      "No examples for register='literary' × task_type='classification'",
-      "Only 1 example for register='literary' × task_type='rewrite'",
-      "Only 1 example for register='literary' × task_type='summarization'",
-      "Only 1 example for register='spoken' × task_type='advice'",
-      "Only 1 example for register='spoken' × task_type='classification'"
+      "Only 2 example(s) for register='tanglish_code_switched'",
+      "No examples for register='culture_history' × task_type='advice'",
+      "No examples for register='culture_history' × task_type='classification'",
+      "Only 1 example for register='culture_history' × task_type='rewrite'",
+      "Only 1 example for register='culture_history' × task_type='summarization'",
+      "No examples for register='literary_prose' × task_type='advice'",
+      "No examples for register='literary_prose' × task_type='classification'",
+      "Only 1 example for register='literary_prose' × task_type='creative'",
+      "Only 1 example for register='literary_prose' × task_type='explanation'",
+      "Only 1 example for register='literary_prose' × task_type='qa'",
+      "No examples for register='literary_prose' × task_type='rewrite'",
+      "No examples for register='literary_prose' × task_type='summarization'",
+      "No examples for register='modern_formal' × task_type='advice'",
+      "Only 1 example for register='modern_formal' × task_type='classification'",
+      "No examples for register='modern_formal' × task_type='creative'",
+      "Only 1 example for register='modern_formal' × task_type='summarization'",
+      "No examples for register='news_formal' × task_type='advice'",
+      "Only 1 example for register='news_formal' × task_type='classification'",
+      "No examples for register='news_formal' × task_type='creative'",
+      "Only 1 example for register='news_formal' × task_type='explanation'",
+      "Only 1 example for register='news_formal' × task_type='qa'",
+      "Only 1 example for register='spoken_colloquial' × task_type='advice'",
+      "Only 1 example for register='spoken_colloquial' × task_type='classification'",
+      "No examples for register='tanglish_code_switched' × task_type='advice'",
+      "No examples for register='tanglish_code_switched' × task_type='classification'",
+      "Only 1 example for register='tanglish_code_switched' × task_type='creative'",
+      "No examples for register='tanglish_code_switched' × task_type='explanation'",
+      "No examples for register='tanglish_code_switched' × task_type='qa'",
+      "Only 1 example for register='tanglish_code_switched' × task_type='rewrite'",
+      "No examples for register='tanglish_code_switched' × task_type='summarization'",
+      "No examples for register='technical_explanatory' × task_type='advice'",
+      "No examples for register='technical_explanatory' × task_type='creative'",
+      "Only 1 example for register='technical_explanatory' × task_type='qa'",
+      "No examples for register='technical_explanatory' × task_type='rewrite'",
+      "Only 1 example for register='technical_explanatory' × task_type='summarization'"
     ],
     "register_x_task_type": {
-      "formal": {
-        "advice": 0,
-        "classification": 4,
-        "comparison": 0,
-        "creative": 0,
-        "explanation": 5,
-        "qa": 4,
-        "reasoning": 0,
-        "rewrite": 4,
-        "summarization": 4
-      },
-      "literary": {
+      "culture_history": {
         "advice": 0,
         "classification": 0,
-        "comparison": 0,
-        "creative": 3,
-        "explanation": 3,
-        "qa": 3,
-        "reasoning": 0,
+        "creative": 2,
+        "explanation": 2,
+        "qa": 2,
         "rewrite": 1,
+        "style_transfer": 0,
         "summarization": 1
       },
-      "spoken": {
+      "literary_prose": {
+        "advice": 0,
+        "classification": 0,
+        "creative": 1,
+        "explanation": 1,
+        "qa": 1,
+        "rewrite": 0,
+        "style_transfer": 0,
+        "summarization": 0
+      },
+      "modern_formal": {
+        "advice": 0,
+        "classification": 1,
+        "creative": 0,
+        "explanation": 2,
+        "qa": 2,
+        "rewrite": 2,
+        "style_transfer": 0,
+        "summarization": 1
+      },
+      "news_formal": {
+        "advice": 0,
+        "classification": 1,
+        "creative": 0,
+        "explanation": 1,
+        "qa": 1,
+        "rewrite": 2,
+        "style_transfer": 0,
+        "summarization": 2
+      },
+      "spoken_colloquial": {
         "advice": 1,
         "classification": 1,
-        "comparison": 0,
-        "creative": 3,
+        "creative": 2,
         "explanation": 3,
         "qa": 4,
-        "reasoning": 0,
-        "rewrite": 4,
+        "rewrite": 3,
+        "style_transfer": 0,
         "summarization": 2
+      },
+      "tanglish_code_switched": {
+        "advice": 0,
+        "classification": 0,
+        "creative": 1,
+        "explanation": 0,
+        "qa": 0,
+        "rewrite": 1,
+        "style_transfer": 0,
+        "summarization": 0
+      },
+      "technical_explanatory": {
+        "advice": 0,
+        "classification": 2,
+        "creative": 0,
+        "explanation": 2,
+        "qa": 1,
+        "rewrite": 0,
+        "style_transfer": 0,
+        "summarization": 1
       }
     }
   },

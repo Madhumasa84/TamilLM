@@ -14,7 +14,7 @@ def test_exact_prompt_duplicate_detected_when_earlier_record_has_schema_error():
             "id": "rec_002",
             "prompt": "வேற ஒரு விஷயம்.",
             "response": "சரி.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
             "domain": "everyday",
             "task_type": "qa",
@@ -26,9 +26,9 @@ def test_exact_prompt_duplicate_detected_when_earlier_record_has_schema_error():
             # of rec_001
             "prompt": "ஆட்டோ எவ்வளவு கட்டணம்?",
             "response": "பேரம் பேசுங்க.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
-            "domain": "travel",
+            "domain": "everyday",
             "task_type": "qa",
             "notes": "duplicate prompt test"
         },
@@ -48,7 +48,7 @@ def test_duplicate_id_included_in_duplicate_summary():
             "id": "dup_id",
             "prompt": "முதல் பதிவு.",
             "response": "சரி.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
             "domain": "everyday",
             "task_type": "qa",
@@ -57,7 +57,7 @@ def test_duplicate_id_included_in_duplicate_summary():
             "id": "dup_id",  # same ID
             "prompt": "வேறு prompt.",
             "response": "வேறு response.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
             "domain": "everyday",
             "task_type": "qa",
@@ -78,7 +78,7 @@ def test_malformed_prompt_does_not_crash_or_pollute_dedup():
             "id": "rec_001",
             "prompt": 12345,  # wrong type — integer not string
             "response": "சரி.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
             "domain": "everyday",
             "task_type": "qa",
@@ -87,7 +87,7 @@ def test_malformed_prompt_does_not_crash_or_pollute_dedup():
             "id": "rec_002",
             "prompt": "நல்ல prompt.",
             "response": "சரி.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
             "domain": "everyday",
             "task_type": "qa",
@@ -132,9 +132,9 @@ def test_empty_id_record_remains_invalid():
             "id": "",  # empty id — must produce schema error
             "prompt": "ஆட்டோ எவ்வளவு?",
             "response": "மீட்டர் படி கொடுங்க.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
-            "domain": "travel",
+            "domain": "everyday",
             "task_type": "qa",
         }
     ]
@@ -172,18 +172,18 @@ def test_empty_id_record_participates_in_dedup():
             "id": "",  # empty id
             "prompt": "ஆட்டோ எவ்வளவு கட்டணம்?",
             "response": "மீட்டர் படி கொடுங்க.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
-            "domain": "travel",
+            "domain": "everyday",
             "task_type": "qa",
         },
         {
             "id": "rec_002",
             "prompt": "ஆட்டோ எவ்வளவு கட்டணம்?",  # exact duplicate
             "response": "பேரம் பேசுங்க.",
-            "register": "spoken",
+            "register": "spoken_colloquial",
             "region": "Generic Tamil Nadu",
-            "domain": "travel",
+            "domain": "everyday",
             "task_type": "qa",
             "notes": "duplicate of empty-id record"
         },
