@@ -845,6 +845,7 @@ class DuplicateDetector:
 def run_all_checks(
     record: dict[str, Any],
     duplicate_detector: DuplicateDetector,
+    locator: str | None = None,
 ) -> RecordResult:
     """Run the full check suite on a single record.
 
@@ -886,7 +887,7 @@ def run_all_checks(
 
     # Step 7: Duplicate detection (runs regardless of schema validity
     # as long as the prompt/response fields are valid strings)
-    record_id = record.get("id", "<missing_id>")
+    record_id = locator if locator else record.get("id", "<missing_id>")
     prompt = record.get("prompt")
     response = record.get("response")
 

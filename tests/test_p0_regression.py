@@ -189,10 +189,18 @@ def test_empty_id_record_participates_in_dedup():
         },
     ]
     validator = SFTValidator()
-    validator.validate(records)
+    results = validator.validate(records)
     report = validator.build_report()
 
-    assert report.duplicate_count > 0, (
+    assert report.duplicate_count == 1, (
+        "REGRESSION: Exactly 1 duplicate should be detected"
+    )
+
+    rec1_issues = [i.check_name for i in results[0].issues if i.check_name.startswith("duplicate")]
+    assert not rec1_issues, "REGRESSION: First bad record flagged as a duplicate of itself"
+
+    rec2_issues = [i.check_name for i in results[1].issues if i.check_name.startswith("duplicate")]
+    assert "duplicate.exact_prompt" in rec2_issues, (
         "REGRESSION: Prompt duplicate was not detected when "
         "the earlier record had an empty id"
     )

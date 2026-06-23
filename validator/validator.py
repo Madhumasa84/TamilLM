@@ -240,7 +240,7 @@ class SFTValidator:
             else:
                 seen_ids[record_id_for_reporting] = i
 
-        for record in records:
+        for i, record in enumerate(records):
             if "_parse_error" in record:
                 result = RecordResult(
                     record_id=record.get("id", "<unknown>"),
@@ -274,7 +274,12 @@ class SFTValidator:
                     record=record,
                 )
             else:
-                result = run_all_checks(record, self._duplicate_detector)
+                raw_id = record.get("id")
+                record_id_for_reporting = (
+                    raw_id if raw_id and str(raw_id).strip()
+                    else f"<line_{i+1}>"
+                )
+                result = run_all_checks(record, self._duplicate_detector, locator=record_id_for_reporting)
             self._results.append(result)
 
         return self._results
