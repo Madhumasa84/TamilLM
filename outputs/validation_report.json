@@ -1,99 +1,92 @@
 {
   "summary": {
-    "total_records": 50,
-    "valid_records": 50,
+    "total_records": 100,
+    "valid_records": 100,
     "invalid_records": 0,
-    "aggregate_quality_score": 99.9,
+    "aggregate_quality_score": 98.2,
     "errors": 0,
-    "warnings": 1,
+    "warnings": 13,
     "info": 0
   },
   "quality_score_distribution": {
-    "90-100": 50,
-    "80-89": 0,
-    "70-79": 0,
+    "90-100": 94,
+    "80-89": 3,
+    "70-79": 3,
     "60-69": 0,
     "50-59": 0,
     "0-49": 0
   },
   "distributions": {
     "register": {
-      "spoken_colloquial": 16,
-      "modern_formal": 8,
-      "culture_history": 8,
-      "news_formal": 7,
-      "technical_explanatory": 6,
-      "literary_prose": 3,
-      "tanglish_code_switched": 2
+      "spoken_colloquial": 26,
+      "modern_formal": 16,
+      "tanglish_code_switched": 14,
+      "technical_explanatory": 13,
+      "news_formal": 13,
+      "culture_history": 12,
+      "literary_prose": 6
     },
     "domain": {
-      "everyday": 17,
-      "technical": 7,
-      "news": 7,
-      "social": 5,
-      "culture": 5,
-      "education": 3,
-      "literature": 3,
-      "history": 3
+      "everyday": 27,
+      "technical": 15,
+      "news": 14,
+      "social": 13,
+      "culture": 11,
+      "history": 8,
+      "literature": 7,
+      "education": 5
     },
     "region": {
-      "Generic Tamil Nadu": 46,
-      "Chennai": 2,
-      "Madurai": 1,
-      "Tirunelveli": 1
+      "Generic Tamil Nadu": 58,
+      "Chennai": 12,
+      "Madurai": 9,
+      "Tirunelveli": 9,
+      "Coimbatore": 8,
+      "Standard Written Tamil": 4
     },
     "task_type": {
-      "qa": 11,
-      "explanation": 11,
-      "rewrite": 9,
-      "summarization": 7,
-      "creative": 6,
-      "classification": 5,
-      "advice": 1
+      "qa": 21,
+      "explanation": 19,
+      "rewrite": 16,
+      "creative": 11,
+      "summarization": 10,
+      "style_transfer": 10,
+      "classification": 7,
+      "advice": 6
     }
   },
   "coverage": {
     "missing_registers": [],
-    "missing_task_types": [
-      "style_transfer"
-    ],
+    "missing_task_types": [],
     "missing_domains": [],
     "coverage_warnings": [
-      "Only 1 example(s) for task_type='advice'",
-      "Only 2 example(s) for register='tanglish_code_switched'",
       "No examples for register='culture_history' × task_type='advice'",
       "No examples for register='culture_history' × task_type='classification'",
       "Only 1 example for register='culture_history' × task_type='rewrite'",
       "Only 1 example for register='culture_history' × task_type='summarization'",
       "No examples for register='literary_prose' × task_type='advice'",
       "No examples for register='literary_prose' × task_type='classification'",
-      "Only 1 example for register='literary_prose' × task_type='creative'",
-      "Only 1 example for register='literary_prose' × task_type='explanation'",
       "Only 1 example for register='literary_prose' × task_type='qa'",
       "No examples for register='literary_prose' × task_type='rewrite'",
+      "No examples for register='literary_prose' × task_type='style_transfer'",
       "No examples for register='literary_prose' × task_type='summarization'",
-      "No examples for register='modern_formal' × task_type='advice'",
+      "Only 1 example for register='modern_formal' × task_type='advice'",
       "Only 1 example for register='modern_formal' × task_type='classification'",
-      "No examples for register='modern_formal' × task_type='creative'",
+      "Only 1 example for register='modern_formal' × task_type='creative'",
       "Only 1 example for register='modern_formal' × task_type='summarization'",
       "No examples for register='news_formal' × task_type='advice'",
       "Only 1 example for register='news_formal' × task_type='classification'",
       "No examples for register='news_formal' × task_type='creative'",
-      "Only 1 example for register='news_formal' × task_type='explanation'",
       "Only 1 example for register='news_formal' × task_type='qa'",
-      "Only 1 example for register='spoken_colloquial' × task_type='advice'",
+      "No examples for register='news_formal' × task_type='style_transfer'",
       "Only 1 example for register='spoken_colloquial' × task_type='classification'",
-      "No examples for register='tanglish_code_switched' × task_type='advice'",
       "No examples for register='tanglish_code_switched' × task_type='classification'",
-      "Only 1 example for register='tanglish_code_switched' × task_type='creative'",
-      "No examples for register='tanglish_code_switched' × task_type='explanation'",
-      "No examples for register='tanglish_code_switched' × task_type='qa'",
-      "Only 1 example for register='tanglish_code_switched' × task_type='rewrite'",
+      "No examples for register='tanglish_code_switched' × task_type='style_transfer'",
       "No examples for register='tanglish_code_switched' × task_type='summarization'",
-      "No examples for register='technical_explanatory' × task_type='advice'",
+      "Only 1 example for register='technical_explanatory' × task_type='advice'",
       "No examples for register='technical_explanatory' × task_type='creative'",
-      "Only 1 example for register='technical_explanatory' × task_type='qa'",
-      "No examples for register='technical_explanatory' × task_type='rewrite'",
+      "Only 1 example for register='technical_explanatory' × task_type='rewrite'",
+      "No examples for register='technical_explanatory' × task_type='style_transfer'",
       "Only 1 example for register='technical_explanatory' × task_type='summarization'"
     ],
     "register_x_task_type": {
@@ -101,69 +94,69 @@
         "advice": 0,
         "classification": 0,
         "creative": 2,
-        "explanation": 2,
-        "qa": 2,
+        "explanation": 3,
+        "qa": 3,
         "rewrite": 1,
-        "style_transfer": 0,
+        "style_transfer": 2,
         "summarization": 1
       },
       "literary_prose": {
         "advice": 0,
         "classification": 0,
-        "creative": 1,
-        "explanation": 1,
+        "creative": 2,
+        "explanation": 3,
         "qa": 1,
         "rewrite": 0,
         "style_transfer": 0,
         "summarization": 0
       },
       "modern_formal": {
-        "advice": 0,
+        "advice": 1,
         "classification": 1,
-        "creative": 0,
+        "creative": 1,
         "explanation": 2,
-        "qa": 2,
-        "rewrite": 2,
-        "style_transfer": 0,
+        "qa": 3,
+        "rewrite": 4,
+        "style_transfer": 3,
         "summarization": 1
       },
       "news_formal": {
         "advice": 0,
         "classification": 1,
         "creative": 0,
-        "explanation": 1,
+        "explanation": 3,
         "qa": 1,
-        "rewrite": 2,
+        "rewrite": 3,
         "style_transfer": 0,
-        "summarization": 2
+        "summarization": 5
       },
       "spoken_colloquial": {
-        "advice": 1,
+        "advice": 2,
         "classification": 1,
         "creative": 2,
         "explanation": 3,
-        "qa": 4,
-        "rewrite": 3,
-        "style_transfer": 0,
+        "qa": 7,
+        "rewrite": 4,
+        "style_transfer": 5,
         "summarization": 2
       },
       "tanglish_code_switched": {
-        "advice": 0,
+        "advice": 2,
         "classification": 0,
-        "creative": 1,
-        "explanation": 0,
-        "qa": 0,
-        "rewrite": 1,
+        "creative": 4,
+        "explanation": 2,
+        "qa": 3,
+        "rewrite": 3,
         "style_transfer": 0,
         "summarization": 0
       },
       "technical_explanatory": {
-        "advice": 0,
-        "classification": 2,
+        "advice": 1,
+        "classification": 4,
         "creative": 0,
-        "explanation": 2,
-        "qa": 1,
-        "rewrite": 0,
+        "explanation": 3,
+        "qa": 3,
+        "rewrite": 1,
         "style_transfer": 0,
         "summarization": 1
       }
@@ -176,7 +169,10 @@
   },
   "safety_warnings": [],
   "issues_by_check": {
-    "naturalness.unnatural_formatting": 1
+    "language.excessive_english": 6,
+    "language.no_tamil_in_prompt": 5,
+    "naturalness.unnatural_formatting": 1,
+    "language.no_tamil_in_response": 1
   },
   "record_details": [
     {
@@ -435,6 +431,358 @@
     },
     {
       "id": "sft_050",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_051",
+      "is_valid": true,
+      "quality_score": 80,
+      "issues": [
+        {
+          "check": "language.no_tamil_in_prompt",
+          "severity": "warning",
+          "message": "Prompt has low Tamil content (0% Tamil, threshold 30%)",
+          "field": "prompt",
+          "suggestion": "Ensure the prompt is primarily in Tamil"
+        }
+      ]
+    },
+    {
+      "id": "sft_052",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_053",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_054",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_055",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_056",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_057",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_058",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_059",
+      "is_valid": true,
+      "quality_score": 70,
+      "issues": [
+        {
+          "check": "language.no_tamil_in_prompt",
+          "severity": "warning",
+          "message": "Prompt has low Tamil content (11% Tamil, threshold 30%)",
+          "field": "prompt",
+          "suggestion": "Ensure the prompt is primarily in Tamil"
+        },
+        {
+          "check": "language.excessive_english",
+          "severity": "warning",
+          "message": "Response has high English content (68% Latin, max 50%)",
+          "field": "response",
+          "suggestion": "Reduce English; use Tamil equivalents where possible"
+        }
+      ]
+    },
+    {
+      "id": "sft_060",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_061",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_062",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_063",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_064",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_065",
+      "is_valid": true,
+      "quality_score": 80,
+      "issues": [
+        {
+          "check": "language.no_tamil_in_prompt",
+          "severity": "warning",
+          "message": "Prompt has low Tamil content (0% Tamil, threshold 30%)",
+          "field": "prompt",
+          "suggestion": "Ensure the prompt is primarily in Tamil"
+        }
+      ]
+    },
+    {
+      "id": "sft_066",
+      "is_valid": true,
+      "quality_score": 80,
+      "issues": [
+        {
+          "check": "language.no_tamil_in_prompt",
+          "severity": "warning",
+          "message": "Prompt has low Tamil content (0% Tamil, threshold 30%)",
+          "field": "prompt",
+          "suggestion": "Ensure the prompt is primarily in Tamil"
+        }
+      ]
+    },
+    {
+      "id": "sft_067",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_068",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_069",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_070",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_071",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_072",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_073",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_074",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_075",
+      "is_valid": true,
+      "quality_score": 90,
+      "issues": [
+        {
+          "check": "language.excessive_english",
+          "severity": "warning",
+          "message": "Response has high English content (51% Latin, max 50%)",
+          "field": "response",
+          "suggestion": "Reduce English; use Tamil equivalents where possible"
+        }
+      ]
+    },
+    {
+      "id": "sft_076",
+      "is_valid": true,
+      "quality_score": 90,
+      "issues": [
+        {
+          "check": "language.excessive_english",
+          "severity": "warning",
+          "message": "Response has high English content (56% Latin, max 50%)",
+          "field": "response",
+          "suggestion": "Reduce English; use Tamil equivalents where possible"
+        }
+      ]
+    },
+    {
+      "id": "sft_077",
+      "is_valid": true,
+      "quality_score": 90,
+      "issues": [
+        {
+          "check": "language.excessive_english",
+          "severity": "warning",
+          "message": "Response has high English content (53% Latin, max 50%)",
+          "field": "response",
+          "suggestion": "Reduce English; use Tamil equivalents where possible"
+        }
+      ]
+    },
+    {
+      "id": "sft_078",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_079",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_080",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_081",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_082",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_083",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_084",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_085",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_086",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_087",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_088",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_089",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_090",
+      "is_valid": true,
+      "quality_score": 70,
+      "issues": [
+        {
+          "check": "language.no_tamil_in_response",
+          "severity": "warning",
+          "message": "Response has low Tamil content (13% Tamil, threshold 30%)",
+          "field": "response",
+          "suggestion": "Ensure the response is primarily in Tamil"
+        },
+        {
+          "check": "language.excessive_english",
+          "severity": "warning",
+          "message": "Response has high English content (87% Latin, max 50%)",
+          "field": "response",
+          "suggestion": "Reduce English; use Tamil equivalents where possible"
+        }
+      ]
+    },
+    {
+      "id": "sft_091",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_092",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_093",
+      "is_valid": true,
+      "quality_score": 70,
+      "issues": [
+        {
+          "check": "language.no_tamil_in_prompt",
+          "severity": "warning",
+          "message": "Prompt has low Tamil content (26% Tamil, threshold 30%)",
+          "field": "prompt",
+          "suggestion": "Ensure the prompt is primarily in Tamil"
+        },
+        {
+          "check": "language.excessive_english",
+          "severity": "warning",
+          "message": "Response has high English content (54% Latin, max 50%)",
+          "field": "response",
+          "suggestion": "Reduce English; use Tamil equivalents where possible"
+        }
+      ]
+    },
+    {
+      "id": "sft_094",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_095",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_096",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_097",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_098",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_099",
+      "is_valid": true,
+      "quality_score": 100
+    },
+    {
+      "id": "sft_100",
       "is_valid": true,
       "quality_score": 100
     }
