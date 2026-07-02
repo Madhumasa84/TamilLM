@@ -122,22 +122,25 @@ ALL_FIELDS: tuple[str, ...] = REQUIRED_FIELDS + OPTIONAL_FIELDS
 """Union of required and optional fields."""
 
 ALLOWED_REGISTERS: frozenset[str] = frozenset({
-    "spoken",
-    "formal",
-    "literary",
+    "spoken_colloquial",
+    "modern_formal",
+    "literary_prose",
+    "technical_explanatory",
+    "news_formal",
+    "culture_history",
+    "tanglish_code_switched",
 })
 """The closed set of valid register labels."""
 
 CANONICAL_TASK_TYPES: frozenset[str] = frozenset({
     "qa",
-    "advice",
     "rewrite",
-    "summarization",
     "explanation",
+    "summarization",
     "classification",
-    "comparison",
-    "reasoning",
+    "advice",
     "creative",
+    "style_transfer",
 })
 """Canonical task-type values that need no normalization."""
 
@@ -152,11 +155,11 @@ TASK_TYPE_ALIASES: dict[str, str] = {
     "summarize": "summarization",
     "explain": "explanation",
     "classify": "classification",
-    "compare": "comparison",
-    "reason": "reasoning",
     "create": "creative",
     "writing": "creative",
     "generation": "creative",
+    "style-transfer": "style_transfer",
+    "style transfer": "style_transfer",
 }
 """Maps recognized-but-non-canonical task_type strings to their canonical
 form.  Values NOT in this dict AND not in ``CANONICAL_TASK_TYPES`` are
@@ -164,23 +167,13 @@ treated as unknown (ERROR)."""
 
 KNOWN_DOMAINS: frozenset[str] = frozenset({
     "everyday",
-    "food",
-    "travel",
-    "health",
-    "education",
-    "workplace",
-    "government",
-    "technical",
+    "news",
     "literature",
-    "history",
+    "technical",
     "culture",
-    "current_affairs",
-    "agriculture",
-    "sports",
-    "entertainment",
-    "science",
-    "law",
-    "finance",
+    "history",
+    "social",
+    "education",
 })
 """Domains the project currently tracks.  Unknown domains produce a
 WARNING (not an error) because the list is expected to grow."""
@@ -196,7 +189,7 @@ KNOWN_REGIONS: frozenset[str] = frozenset({
     "Malaysia",
     "Singapore",
 })
-"""Known region labels (Tamil-script).  Unknown regions produce a
+"""Known region labels (English).  Unknown regions produce a
 WARNING because new regions can be added at any time."""
 
 

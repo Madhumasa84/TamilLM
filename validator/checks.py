@@ -429,7 +429,7 @@ def check_naturalness(record: dict[str, Any]) -> list[ValidationIssue]:
     bullets = _BULLET_ITEM_RE.findall(response)
     list_items = len(numbered) + len(bullets)
     if list_items > 7:
-        severity = Severity.WARNING if register == "spoken" else Severity.INFO
+        severity = Severity.WARNING if register in ("spoken_colloquial", "tanglish_code_switched") else Severity.INFO
         issues.append(ValidationIssue(
             record_id=record_id,
             check_name="naturalness.unnatural_formatting",
@@ -515,7 +515,7 @@ def check_consistency(record: dict[str, Any]) -> list[ValidationIssue]:
         return issues
 
     # ── Register vs. vocabulary ──────────────────────────────────────
-    if register == "spoken":
+    if register in ("spoken_colloquial", "tanglish_code_switched"):
         formal_hits = sum(
             1 for pattern in _FORMAL_INDICATORS
             if pattern.search(response)
@@ -526,17 +526,17 @@ def check_consistency(record: dict[str, Any]) -> list[ValidationIssue]:
                 check_name="consistency.register_mismatch",
                 severity=Severity.WARNING,
                 message=(
-                    f"Register is 'spoken' but response contains "
+                    f"Register is '{register}' but response contains "
                     f"{formal_hits} formal Tamil indicators"
                 ),
                 field="register",
                 suggestion=(
-                    "Change register to 'formal', or rewrite the "
-                    "response in spoken style"
+                    "Change register to a formal variant, or rewrite "
+                    "the response in spoken style"
                 ),
             ))
 
-    elif register == "literary":
+    elif register in ("literary_prose", "culture_history"):
         casual_hits = sum(
             1 for pattern in _CASUAL_INDICATORS
             if pattern.search(response)
@@ -547,17 +547,17 @@ def check_consistency(record: dict[str, Any]) -> list[ValidationIssue]:
                 check_name="consistency.register_mismatch",
                 severity=Severity.WARNING,
                 message=(
-                    f"Register is 'literary' but response contains "
+                    f"Register is '{register}' but response contains "
                     f"{casual_hits} casual/spoken indicators"
                 ),
                 field="register",
                 suggestion=(
-                    "Change register to 'spoken', or rewrite the "
-                    "response in literary style"
+                    "Change register to 'spoken_colloquial', or rewrite "
+                    "the response in literary style"
                 ),
             ))
 
-    elif register == "formal":
+    elif register in ("modern_formal", "technical_explanatory", "news_formal"):
         casual_hits = sum(
             1 for pattern in _CASUAL_INDICATORS
             if pattern.search(response)
@@ -568,13 +568,13 @@ def check_consistency(record: dict[str, Any]) -> list[ValidationIssue]:
                 check_name="consistency.register_mismatch",
                 severity=Severity.WARNING,
                 message=(
-                    f"Register is 'formal' but response contains "
+                    f"Register is '{register}' but response contains "
                     f"{casual_hits} casual/spoken indicators"
                 ),
                 field="register",
                 suggestion=(
-                    "Change register to 'spoken', or rewrite the "
-                    "response in formal style"
+                    "Change register to 'spoken_colloquial', or rewrite "
+                    "the response in formal style"
                 ),
             ))
 
