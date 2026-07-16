@@ -1,6 +1,6 @@
 # TamilLM SFT Seed Dataset
 
-A **100-pair** Tamil instruction-tuning seed dataset and validation pipeline for **TamilLM**, a from-scratch Tamil-first language model.
+A **200-pair** Tamil instruction-tuning seed dataset and validation pipeline for **TamilLM**, a from-scratch Tamil-first language model.
 
 ---
 
@@ -30,7 +30,7 @@ python -m pytest tests/ -v
 ```text
 TamilLM/
 ├── data/
-│   └── tamil_sft_seed.jsonl        # Single source of truth (100 records)
+│   └── tamil_sft_seed.jsonl        # Single source of truth (200 records)
 ├── fixtures/
 │   └── bad_examples.jsonl          # Test fixtures for the validator
 ├── outputs/
@@ -60,58 +60,72 @@ TamilLM/
 
 ## Dataset Overview
 
-The dataset contains **100 instruction–response pairs** spanning 7 registers, 8 domains, 8 task types, and 6 regional variants. The original 50 seed pairs (sft\_001–sft\_050) were written by hand; the P2 expansion (sft\_051–sft\_100) added 50 new pairs with dialect-authenticated regional coverage and a refined taxonomy.
+The dataset contains **200 instruction–response pairs** spanning 7 registers, 8 domains, 8 task types, and 7 regional variants. The original 50 seed pairs (sft\_001–sft\_050) were written by hand; the P2 expansion added 150 new pairs with dialect-authenticated regional coverage and a refined taxonomy.
 
-### Register Distribution
+---
 
-| Register | Count | Description |
-|---|---|---|
-| `spoken_colloquial` | 26 | Everyday WhatsApp/social media Tamil |
-| `modern_formal` | 16 | Official documents, emails, procedures |
-| `tanglish_code_switched` | 14 | Explicit Tamil–English code-switching |
-| `technical_explanatory` | 13 | Software, engineering, science explanations |
-| `news_formal` | 13 | Journalistic Tamil, objective reporting |
-| `culture_history` | 12 | Heritage, classical traditions, history |
-| `literary_prose` | 6 | Elevated essays, fiction, literary criticism |
+## Dataset Distribution (200 records)
 
-### Domain Distribution
+### By Register
+
+| Register | Count |
+|----------|-------|
+| `spoken_colloquial` | 57 |
+| `modern_formal` | 49 |
+| `literary_prose` | 23 |
+| `technical_explanatory` | 22 |
+| `tanglish_code_switched` | 19 |
+| `culture_history` | 16 |
+| `news_formal` | 14 |
+
+### By Task Type
+
+| Task Type | Count |
+|-----------|-------|
+| `explanation` | 49 |
+| `advice` | 32 |
+| `creative` | 26 |
+| `classification` | 24 |
+| `qa` | 21 |
+| `rewrite` | 19 |
+| `summarization` | 17 |
+| `style_transfer` | 12 |
+
+### By Domain
 
 | Domain | Count |
-|---|---|
-| `everyday` | 27 |
-| `technical` | 15 |
-| `news` | 14 |
-| `social` | 13 |
-| `culture` | 11 |
-| `history` | 8 |
-| `literature` | 7 |
-| `education` | 5 |
+|--------|-------|
+| `everyday` | 46 |
+| `education` | 31 |
+| `social` | 27 |
+| `culture` | 23 |
+| `technical` | 20 |
+| `literature` | 20 |
+| `news` | 17 |
+| `history` | 16 |
 
-### Regional Coverage
+### By Region
 
 | Region | Count |
-|---|---|
-| Generic Tamil Nadu | 59 |
-| Chennai | 12 |
+|--------|-------|
+| Generic Tamil Nadu | 110 |
+| Standard Written Tamil | 35 |
+| Coimbatore | 15 |
+| Chennai | 13 |
 | Madurai | 9 |
 | Tirunelveli | 9 |
-| Coimbatore | 7 |
-| Standard Written Tamil | 4 |
+| Sri Lanka | 9 |
 
 Regional records use **authentic dialect markers** verified by native speakers — not generic spoken Tamil with a region label. Key markers include Kongu "ங்க" verb suffixes (Coimbatore), "ஏலே" interjections (Tirunelveli), "எம்மாளி" / "உசிரே" slang (Nellai), and "பங்காளி" / "டா" address forms (Madurai).
 
-### Task Type Distribution
+### By Flag
 
-| Task Type | Count |
-|---|---|
-| `qa` | 21 |
-| `explanation` | 19 |
-| `rewrite` | 16 |
-| `creative` | 11 |
-| `summarization` | 10 |
-| `style_transfer` | 10 |
-| `classification` | 7 |
-| `advice` | 6 |
+| Flag | Count |
+|------|-------|
+| (none) | 176 |
+| `allowed_code_switch` | 19 |
+| `romanized_tamil_artifact` | 3 |
+| `unexpected_latin_text` | 2 |
 
 ---
 
@@ -185,21 +199,25 @@ A Tirunelveli dialect pair and a Coimbatore dialect pair covering bus travel sha
 
 ## Validation Results
 
-| Metric | Value |
-|---|---|
-| **Records** | 100 total, 100 valid, 0 invalid |
-| **Quality** | 98.2/100 (aggregate) |
-| **Issues** | 0 errors, 12 warnings, 0 info |
-| **Duplicates** | 0 duplicate findings |
-| **Coverage** | 28 coverage warnings |
+```
+Records:  200 total, 200 valid, 0 invalid
+Quality:  98.4/100 (aggregate)
+Issues:   0 errors, 21 warnings, 0 duplicates
+```
 
-The 12 warnings are `language.excessive_english` flags on intentionally code-mixed Tanglish records - all reviewed and confirmed acceptable. The 28 coverage warnings reflect register × task\_type combinations with fewer than 2 examples, expected at this dataset size.
+Remaining warnings are expected false positives — primarily the English ratio check on intentionally code-mixed tanglish_code_switched pairs, and non-canonical task_type aliases. Each has been reviewed and confirmed acceptable.
 
-### Flag Summary
+---
 
-| Flag | Count |
-|------|-------|
-| `allowed_code_switch` | 14 |
-| `romanized_tamil_artifact` | 3 |
-| `unexpected_latin_text` | 2 |
-| (none) | 81 |
+## Proposed Additional Domains
+
+The following extensions are proposed for the next dataset phase:
+
+**New domains:**
+- `health` — Medical advice, symptoms, traditional medicine (Siddha/Ayurveda), and public health communication in Tamil Nadu and Sri Lanka contexts.
+- `finance` — Personal finance, banking, government schemes (PM-Kisan, TN welfare), and informal economy discussions.
+- `workplace` — Professional communication, job applications, performance reviews, and workplace conflict in Tamil corporate contexts.
+
+**New task types:**
+- `comparison` — Evaluating two or more options (products, policies, approaches) with explicit pros/cons reasoning.
+- `reasoning` — Multi-step logical inference, cause-and-effect explanation, and structured argumentation.
