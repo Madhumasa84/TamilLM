@@ -428,3 +428,50 @@ def compute_quality_score(issues: list[ValidationIssue]) -> int:
             penalty = _SEVERITY_FALLBACK_PENALTY.get(issue.severity, 0)
         score -= penalty
     return max(0, score)
+
+
+def apply_strict_mode(
+    issues: list[ValidationIssue],
+    config: Any,
+) -> list[ValidationIssue]:
+    """Escalate configured WARNING checks to ERROR in strict mode.
+
+    If ``config`` is ``None`` or ``config.strict_mode`` is ``False``,
+    returns *issues* unchanged.
+
+    For each issue whose ``severity`` is ``WARNING`` **and** whose
+    ``check_name`` is listed in ``config.strict_checks``, a new
+    :class:`ValidationIssue` is created (identical except severity
+    becomes ``ERROR`` and the message is prefixed with ``[STRICT]``).
+
+    :class:`ValidationIssue` is frozen, so originals are never mutated;
+    a fresh list is returned.
+
+    Args:
+        issues: Issues produced by the check suite.
+        config: A ``ValidatorConfig`` instance (or ``None``).
+
+    Returns:
+        New list with escalated issues; original list is not modified.
+    """
+    if not config or not getattr(config, "strict_mode", False):
+        return issues
+
+    strict_checks: list[str] = getattr(config, "strict_checks", [])
+    escalated: list[ValidationIssue] = []
+    for issue in issues:
+        if (
+            issue.severity == Severity.WARNING
+            and issue.check_name in strict_checks
+        ):
+            escalated.append(ValidationIssue(
+                record_id=issue.record_id,
+                check_name=issue.check_name,
+                severity=Severity.ERROR,
+                message=f"[STRICT] {issue.message}",
+                field=issue.field,
+                suggestion=issue.suggestion,
+            ))
+        else:
+            escalated.append(issue)
+    return escalated

@@ -41,11 +41,14 @@ TamilLM/
 ├── tests/
 │   ├── test_checks.py              # Test cases for individual rules
 │   ├── test_p0_regression.py       # P0 regression cases
+│   ├── test_p3_hardening.py        # P3 config / strict / CI summary tests
 │   ├── test_utils.py               # Test cases for helpers
 │   └── test_validator.py           # Test cases for orchestrator
 ├── validator/
 │   ├── __init__.py
 │   ├── checks.py                   # Validation rules & checks logic
+│   ├── config.py                   # ValidatorConfig dataclass (P3)
+│   ├── config.default.json         # Reference config with default values (P3)
 │   ├── requirements.txt
 │   ├── utils.py                    # Configuration, constants & scoring logic
 │   └── validator.py                # Orchestrator logic
@@ -53,7 +56,7 @@ TamilLM/
 ├── LICENSE
 ├── README.md
 ├── main.py                         # Default wrapper runner script
-└── validate_sft.py                 # CLI entry point for programmatic usage
+└── validate_sft.py                 # CLI entry point (--strict/--config/--ci-summary)
 ```
 
 ---
@@ -178,6 +181,106 @@ The script checks each value before mapping - records already using the new taxo
 
 **Exit 0 on data failures, exit 1 on infrastructure failures.**  
 A record failing validation is a data finding, not a tool failure. The validator exits nonzero only when it cannot do its job: file not found, malformed JSONL it cannot parse, missing dependency.
+
+---
+
+## Validator Configuration (P3)
+
+By default, the validator uses built-in thresholds and treats warnings as
+warnings — nothing changes from earlier behavior.
+
+### Strict mode
+
+Escalate selected warning-level checks to errors:
+
+```bash
+python validate_sft.py \
+  --input data/tamil_sft_seed.jsonl \
+  --clean outputs/clean.jsonl \
+  --report outputs/validation_report.json \
+  --strict
+```
+
+Checks escalated by default in strict mode:
+
+- `language.excessive_english`
+- `naturalness.unnatural_formatting`
+- `consistency.register_mismatch`
+
+When a check is escalated, its message is prefixed with `[STRICT]` and the
+record is counted as invalid. Records that had no warnings matching the list
+are completely unaffected.
+
+### Custom thresholds
+
+Provide a JSON config file to override default thresholds:
+
+```bash
+python validate_sft.py \
+  --input data/tamil_sft_seed.jsonl \
+  --clean outputs/clean.jsonl \
+  --report outputs/validation_report.json \
+  --config my_config.json
+```
+
+See `validator/config.default.json` for the full list of configurable fields.
+Copy it and modify only the values you want to change:
+
+```json
+{
+  "min_response_length": 30,
+  "max_english_ratio": 0.4,
+  "strict_mode": false,
+  "strict_checks": ["language.excessive_english"]
+}
+```
+
+`--config` and `--strict` can be combined: the config file sets thresholds
+and the flag turns on strict mode (or set `"strict_mode": true` in the file).
+
+### CI-friendly summary line
+
+Print a machine-readable summary line for CI pipelines, in addition to the
+normal report:
+
+```bash
+python validate_sft.py \
+  --input data/tamil_sft_seed.jsonl \
+  --clean outputs/clean.jsonl \
+  --report outputs/validation_report.json \
+  --ci-summary
+```
+
+Example output line (appears after the normal human-readable summary):
+
+```
+CI_SUMMARY total=200 valid=200 invalid=0 errors=0 warnings=21 quality=98.4
+```
+
+Parse it in shell with:
+
+```bash
+eval $(python validate_sft.py ... --ci-summary 2>/dev/null | \
+  grep '^CI_SUMMARY' | sed 's/CI_SUMMARY //' | tr ' ' '\n' | \
+  sed 's/^/export CI_/')
+echo "Valid: $CI_valid / $CI_total"
+```
+
+### Exit code philosophy
+
+Exit code remains **0 by default** even with validation findings — this does
+not change with `--strict` or `--ci-summary`.
+
+| Situation | Exit code |
+|-----------|-----------|
+| Validation found bad records | `0` — data finding, not tool failure |
+| `--strict` escalated warnings to errors | `0` — still a data finding |
+| File not found / malformed input | `1` — infrastructure failure |
+| Missing dependency | `1` — infrastructure failure |
+
+This design lets CI pipelines consume the `CI_SUMMARY` line to apply their
+own gate logic rather than relying on the exit code, preserving full
+flexibility for downstream consumers.
 
 ---
 

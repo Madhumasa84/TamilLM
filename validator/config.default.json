@@ -1,0 +1,15 @@
+{
+  "min_response_length": 20,
+  "max_response_length": 5000,
+  "min_tamil_ratio": 0.3,
+  "max_english_ratio": 0.5,
+  "near_duplicate_threshold": 0.7,
+  "repetition_threshold": 3,
+  "low_coverage_threshold": 2,
+  "strict_mode": false,
+  "strict_checks": [
+    "language.excessive_english",
+    "naturalness.unnatural_formatting",
+    "consistency.register_mismatch"
+  ]
+}
