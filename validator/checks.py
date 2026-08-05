@@ -53,6 +53,7 @@ from validator.utils import (
     RecordResult,
     Severity,
     ValidationIssue,
+    apply_strict_mode,
     char_trigrams,
     compute_quality_score,
     english_script_ratio,
@@ -253,7 +254,10 @@ def check_metadata(record: dict[str, Any]) -> list[ValidationIssue]:
 # 3. Language Quality Checks
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-def check_language_quality(record: dict[str, Any]) -> list[ValidationIssue]:
+def check_language_quality(
+    record: dict[str, Any],
+    config: Any = None,
+) -> list[ValidationIssue]:
     """Validate language-level quality of prompt and response text.
 
     Checks:
@@ -262,23 +266,40 @@ def check_language_quality(record: dict[str, Any]) -> list[ValidationIssue]:
     * Excessive English content in response
     * Response too short or too long
     * Malformed Unicode sequences in either field
+
+    If *config* is provided, thresholds are taken from
+    :class:`~validator.config.ValidatorConfig`.  If *config* is ``None``,
+    the legacy module-level constants are used (unchanged default behavior).
     """
     issues: list[ValidationIssue] = []
     record_id: str = record.get("id", "<missing_id>")
     prompt: str = record.get("prompt", "")
     response: str = record.get("response", "")
 
+    min_tamil = (
+        config.min_tamil_ratio if config is not None else MIN_TAMIL_RATIO
+    )
+    max_english = (
+        config.max_english_ratio if config is not None else MAX_ENGLISH_RATIO
+    )
+    min_resp_len = (
+        config.min_response_length if config is not None else MIN_RESPONSE_LENGTH
+    )
+    max_resp_len = (
+        config.max_response_length if config is not None else MAX_RESPONSE_LENGTH
+    )
+
     # ── Tamil presence in prompt ─────────────────────────────────────
     if prompt:
         ratio = tamil_script_ratio(prompt)
-        if ratio < MIN_TAMIL_RATIO:
+        if ratio < min_tamil:
             issues.append(ValidationIssue(
                 record_id=record_id,
                 check_name="language.no_tamil_in_prompt",
                 severity=Severity.WARNING,
                 message=(
                     f"Prompt has low Tamil content "
-                    f"({ratio:.0%} Tamil, threshold {MIN_TAMIL_RATIO:.0%})"
+                    f"({ratio:.0%} Tamil, threshold {min_tamil:.0%})"
                 ),
                 field="prompt",
                 suggestion="Ensure the prompt is primarily in Tamil",
@@ -287,14 +308,14 @@ def check_language_quality(record: dict[str, Any]) -> list[ValidationIssue]:
     # ── Tamil presence in response ───────────────────────────────────
     if response:
         ratio = tamil_script_ratio(response)
-        if ratio < MIN_TAMIL_RATIO:
+        if ratio < min_tamil:
             issues.append(ValidationIssue(
                 record_id=record_id,
                 check_name="language.no_tamil_in_response",
                 severity=Severity.WARNING,
                 message=(
                     f"Response has low Tamil content "
-                    f"({ratio:.0%} Tamil, threshold {MIN_TAMIL_RATIO:.0%})"
+                    f"({ratio:.0%} Tamil, threshold {min_tamil:.0%})"
                 ),
                 field="response",
                 suggestion="Ensure the response is primarily in Tamil",
@@ -303,14 +324,14 @@ def check_language_quality(record: dict[str, Any]) -> list[ValidationIssue]:
     # ── Excessive English in response ────────────────────────────────
     if response:
         eng_ratio = english_script_ratio(response)
-        if eng_ratio > MAX_ENGLISH_RATIO:
+        if eng_ratio > max_english:
             issues.append(ValidationIssue(
                 record_id=record_id,
                 check_name="language.excessive_english",
                 severity=Severity.WARNING,
                 message=(
                     f"Response has high English content "
-                    f"({eng_ratio:.0%} Latin, max {MAX_ENGLISH_RATIO:.0%})"
+                    f"({eng_ratio:.0%} Latin, max {max_english:.0%})"
                 ),
                 field="response",
                 suggestion="Reduce English; use Tamil equivalents where possible",
@@ -319,26 +340,26 @@ def check_language_quality(record: dict[str, Any]) -> list[ValidationIssue]:
     # ── Response length ──────────────────────────────────────────────
     if response:
         length = len(response.strip())
-        if length < MIN_RESPONSE_LENGTH:
+        if length < min_resp_len:
             issues.append(ValidationIssue(
                 record_id=record_id,
                 check_name="language.too_short_response",
                 severity=Severity.WARNING,
                 message=(
                     f"Response is very short ({length} chars, "
-                    f"minimum {MIN_RESPONSE_LENGTH})"
+                    f"minimum {min_resp_len})"
                 ),
                 field="response",
                 suggestion="Expand the response to provide more value",
             ))
-        elif length > MAX_RESPONSE_LENGTH:
+        elif length > max_resp_len:
             issues.append(ValidationIssue(
                 record_id=record_id,
                 check_name="language.too_long_response",
                 severity=Severity.INFO,
                 message=(
                     f"Response is very long ({length} chars, "
-                    f"suggested max {MAX_RESPONSE_LENGTH})"
+                    f"suggested max {max_resp_len})"
                 ),
                 field="response",
             ))
@@ -368,7 +389,10 @@ _NUMBERED_ITEM_RE = re.compile(r"^\d+[.)]\s", re.MULTILINE)
 _BULLET_ITEM_RE = re.compile(r"^[-•●▪]\s", re.MULTILINE)
 
 
-def check_naturalness(record: dict[str, Any]) -> list[ValidationIssue]:
+def check_naturalness(
+    record: dict[str, Any],
+    config: Any = None,
+) -> list[ValidationIssue]:
     """Flag responses that exhibit machine-generated or unnatural patterns.
 
     Heuristics (not ML):
@@ -380,6 +404,9 @@ def check_naturalness(record: dict[str, Any]) -> list[ValidationIssue]:
 
     These produce WARNINGs or INFOs — never ERRORs — because false
     positives are expected.  The curator makes the final call.
+
+    If *config* is provided, ``repetition_threshold`` is taken from it.
+    If *config* is ``None``, the legacy module-level constant is used.
     """
     issues: list[ValidationIssue] = []
     record_id: str = record.get("id", "<missing_id>")
@@ -388,6 +415,10 @@ def check_naturalness(record: dict[str, Any]) -> list[ValidationIssue]:
 
     if not response:
         return issues
+
+    repetition_threshold = (
+        config.repetition_threshold if config is not None else REPETITION_THRESHOLD
+    )
 
     # ── Excessive repetition ─────────────────────────────────────────
     # Split on sentence boundaries and check for repeated phrases.
@@ -400,7 +431,7 @@ def check_naturalness(record: dict[str, Any]) -> list[ValidationIssue]:
     if phrases:
         phrase_counts = Counter(phrases)
         for phrase, count in phrase_counts.most_common(1):
-            if count >= REPETITION_THRESHOLD:
+            if count >= repetition_threshold:
                 preview = phrase[:60] + ("…" if len(phrase) > 60 else "")
                 issues.append(ValidationIssue(
                     record_id=record_id,
@@ -846,6 +877,7 @@ def run_all_checks(
     record: dict[str, Any],
     duplicate_detector: DuplicateDetector,
     locator: str | None = None,
+    config: Any = None,
 ) -> RecordResult:
     """Run the full check suite on a single record.
 
@@ -858,11 +890,26 @@ def run_all_checks(
     5. Consistency checks
     6. Safety checks
     7. Duplicate detection
+    8. Strict-mode escalation (optional, via *config*)
 
     **Short-circuit rule**: if schema checks produce any ERROR, steps
     2–7 are skipped entirely.  A record with missing fields cannot be
     meaningfully evaluated for naturalness or safety, and attempting
     to do so would produce misleading warnings.
+
+    **Strict mode**: if *config* is provided and ``config.strict_mode``
+    is ``True``, any WARNING whose ``check_name`` is listed in
+    ``config.strict_checks`` is escalated to ERROR before computing
+    ``is_valid`` and ``quality_score``.  When *config* is ``None`` the
+    behavior is identical to the pre-P3 implementation.
+
+    Args:
+        record:             The raw record dict to validate.
+        duplicate_detector: Stateful dedup tracker (shared across calls).
+        locator:            Override for the record ID used in dedup
+                            lookups (e.g. line-number placeholder).
+        config:             Optional :class:`~validator.config.ValidatorConfig`.
+                            ``None`` preserves legacy behavior.
 
     Returns a :class:`RecordResult` with all issues and a computed
     quality score.
@@ -880,8 +927,8 @@ def run_all_checks(
     # Steps 2–6: content-level checks (skipped on schema errors)
     if not has_schema_errors:
         all_issues.extend(check_metadata(record))
-        all_issues.extend(check_language_quality(record))
-        all_issues.extend(check_naturalness(record))
+        all_issues.extend(check_language_quality(record, config=config))
+        all_issues.extend(check_naturalness(record, config=config))
         all_issues.extend(check_consistency(record))
         all_issues.extend(check_safety(record))
 
@@ -899,6 +946,9 @@ def run_all_checks(
         all_issues.extend(duplicate_detector.check_against_registered(
             record_id=record_id, text=response, field_name="response"
         ))
+
+    # Step 8: Strict-mode escalation (WARNING → ERROR for configured checks)
+    all_issues = apply_strict_mode(all_issues, config)
 
     # Derive validity and quality score
     is_valid = not any(

@@ -34,11 +34,11 @@ from pathlib import Path
 from typing import Any
 
 from validator.checks import DuplicateDetector, run_all_checks
+from validator.config import ValidatorConfig
 from validator.utils import (
     ALLOWED_REGISTERS,
     CANONICAL_TASK_TYPES,
     KNOWN_DOMAINS,
-    LOW_COVERAGE_THRESHOLD,
     TASK_TYPE_ALIASES,
     RecordResult,
     Severity,
@@ -114,8 +114,11 @@ class SFTValidator:
     in the report — they never crash the run.
     """
 
-    def __init__(self) -> None:
-        self._duplicate_detector = DuplicateDetector()
+    def __init__(self, config: ValidatorConfig | None = None) -> None:
+        self._config = config or ValidatorConfig.default()
+        self._duplicate_detector = DuplicateDetector(
+            near_duplicate_threshold=self._config.near_duplicate_threshold
+        )
         self._results: list[RecordResult] = []
 
     # ── Loading ──────────────────────────────────────────────────────
@@ -279,7 +282,12 @@ class SFTValidator:
                     raw_id if raw_id and str(raw_id).strip()
                     else f"<line_{i+1}>"
                 )
-                result = run_all_checks(record, self._duplicate_detector, locator=record_id_for_reporting)
+                result = run_all_checks(
+                    record,
+                    self._duplicate_detector,
+                    locator=record_id_for_reporting,
+                    config=self._config,
+                )
             self._results.append(result)
 
         return self._results
@@ -335,10 +343,12 @@ class SFTValidator:
         # ── Coverage warnings ────────────────────────────────────────
         warnings: list[str] = []
 
+        low_thresh = self._config.low_coverage_threshold
+
         # Low-count task types
         for tt in sorted(CANONICAL_TASK_TYPES):
             count = task_types[tt]
-            if 0 < count <= LOW_COVERAGE_THRESHOLD:
+            if 0 < count <= low_thresh:
                 warnings.append(
                     f"Only {count} example(s) for task_type='{tt}'"
                 )
@@ -346,7 +356,7 @@ class SFTValidator:
         # Low-count registers
         for reg in sorted(ALLOWED_REGISTERS):
             count = registers[reg]
-            if 0 < count <= LOW_COVERAGE_THRESHOLD:
+            if 0 < count <= low_thresh:
                 warnings.append(
                     f"Only {count} example(s) for register='{reg}'"
                 )
