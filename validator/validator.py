@@ -29,12 +29,12 @@ from __future__ import annotations
 import json
 import sys
 from collections import Counter, defaultdict
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from validator.checks import DuplicateDetector, run_all_checks
 from validator.config import ValidatorConfig
+from validator.reporting import CoverageAnalysis, ValidationReport
 from validator.utils import (
     ALLOWED_REGISTERS,
     CANONICAL_TASK_TYPES,
@@ -44,55 +44,6 @@ from validator.utils import (
     Severity,
     ValidationIssue,
 )
-
-
-# ───────────────────────────────────────────────────────────────────────────
-# Report Data Structures
-# ───────────────────────────────────────────────────────────────────────────
-
-@dataclass
-class CoverageAnalysis:
-    """Coverage analysis: what the dataset is missing.
-
-    Goes beyond simple distributions to surface:
-
-    * Entirely missing categories (register, task_type, domain)
-    * Thin spots in cross-coverage (register × task_type)
-    * Human-readable warnings for actionable curation
-    """
-
-    missing_registers: list[str]
-    missing_task_types: list[str]
-    missing_domains: list[str]
-    coverage_warnings: list[str]
-    cross_coverage: dict[str, dict[str, int]]
-
-
-@dataclass
-class ValidationReport:
-    """Complete validation report for a dataset run.
-
-    Designed to be serialized to JSON for downstream tooling,
-    dashboarding, or CI/CD gates.
-    """
-
-    total_records: int
-    valid_records: int
-    invalid_records: int
-    aggregate_quality_score: float
-    quality_score_distribution: dict[str, int]
-    register_distribution: dict[str, int]
-    domain_distribution: dict[str, int]
-    region_distribution: dict[str, int]
-    task_type_distribution: dict[str, int]
-    duplicate_count: int
-    coverage: CoverageAnalysis
-    error_count: int
-    warning_count: int
-    info_count: int
-    safety_warnings: list[dict[str, Any]]
-    issues_by_check: dict[str, int]
-    record_details: list[dict[str, Any]]
 
 
 # ───────────────────────────────────────────────────────────────────────────
@@ -116,10 +67,14 @@ class SFTValidator:
 
     def __init__(self, config: ValidatorConfig | None = None) -> None:
         self._config = config or ValidatorConfig.default()
-        self._duplicate_detector = DuplicateDetector(
+        self._duplicate_detector = self._new_duplicate_detector()
+        self._results: list[RecordResult] = []
+
+    def _new_duplicate_detector(self) -> DuplicateDetector:
+        """Create an isolated deduplication state for one validation run."""
+        return DuplicateDetector(
             near_duplicate_threshold=self._config.near_duplicate_threshold
         )
-        self._results: list[RecordResult] = []
 
     # ── Loading ──────────────────────────────────────────────────────
 
@@ -199,6 +154,9 @@ class SFTValidator:
             Ordered list of :class:`RecordResult` (same order as input).
         """
         self._results = []
+        # A validator instance can be reused safely.  Dedup state and its
+        # counters belong to one dataset run, never to the object lifetime.
+        self._duplicate_detector = self._new_duplicate_detector()
 
         # Pass 1: Register all prompts/responses for dedup
         # regardless of schema validity.
@@ -228,6 +186,7 @@ class SFTValidator:
         # Check for duplicate IDs first.
         # Use the same reporting-id logic (never mutate the record).
         seen_ids: dict[str, int] = {}
+        duplicate_id_errors: dict[int, str] = {}
         for i, record in enumerate(records):
             raw_id = record.get("id")
             record_id_for_reporting = (
@@ -235,8 +194,7 @@ class SFTValidator:
                 else f"<line_{i+1}>"
             )
             if record_id_for_reporting in seen_ids:
-                # Mark this record with a duplicate ID error
-                record["_duplicate_id"] = (
+                duplicate_id_errors[i] = (
                     f"ID '{record_id_for_reporting}' already seen at "
                     f"record {seen_ids[record_id_for_reporting] + 1}"
                 )
@@ -259,7 +217,7 @@ class SFTValidator:
                     quality_score=0,
                     record=record,
                 )
-            elif "_duplicate_id" in record:
+            elif i in duplicate_id_errors:
                 result = RecordResult(
                     record_id=record.get("id", "<unknown>"),
                     is_valid=False,
@@ -268,7 +226,7 @@ class SFTValidator:
                             record_id=record.get("id", "<unknown>"),
                             check_name="schema.duplicate_id",
                             severity=Severity.ERROR,
-                            message=record["_duplicate_id"],
+                            message=duplicate_id_errors[i],
                             field="id",
                             suggestion="Each record must have a unique ID",
                         )
@@ -634,4 +592,3 @@ class SFTValidator:
         if report.coverage.coverage_warnings:
             n = len(report.coverage.coverage_warnings)
             print(f"  Coverage: {n} coverage warning(s)")
-

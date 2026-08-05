@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tamillm.example/schemas/sft-record.schema.json",
+  "title": "TamilLM supervised fine-tuning record",
+  "type": "object",
+  "required": [
+    "id",
+    "prompt",
+    "response",
+    "register",
+    "region",
+    "domain",
+    "task_type"
+  ],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "prompt": {"type": "string", "minLength": 1},
+    "response": {"type": "string", "minLength": 1},
+    "register": {"type": "string", "minLength": 1},
+    "region": {"type": "string", "minLength": 1},
+    "domain": {"type": "string", "minLength": 1},
+    "task_type": {"type": "string", "minLength": 1},
+    "notes": {"type": "string"},
+    "flag": {
+      "type": "string",
+      "enum": [
+        "romanized_tamil_artifact",
+        "unexpected_latin_text",
+        "allowed_code_switch"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

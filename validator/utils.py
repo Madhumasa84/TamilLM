@@ -22,10 +22,19 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
+from validator.config import (
+    DEFAULT_LOW_COVERAGE_THRESHOLD,
+    DEFAULT_MAX_ENGLISH_RATIO,
+    DEFAULT_MAX_RESPONSE_LENGTH,
+    DEFAULT_MIN_RESPONSE_LENGTH,
+    DEFAULT_MIN_TAMIL_RATIO,
+    DEFAULT_NEAR_DUPLICATE_THRESHOLD,
+    DEFAULT_REPETITION_THRESHOLD,
+)
 
 
 # Tamil Unicode Constants
@@ -249,25 +258,25 @@ _SEVERITY_FALLBACK_PENALTY: dict[Severity, int] = {
 
 # Numeric Thresholds
 
-MIN_RESPONSE_LENGTH: int = 20
+MIN_RESPONSE_LENGTH: int = DEFAULT_MIN_RESPONSE_LENGTH
 """Responses shorter than this (characters) are flagged as too short."""
 
-MAX_RESPONSE_LENGTH: int = 5000
+MAX_RESPONSE_LENGTH: int = DEFAULT_MAX_RESPONSE_LENGTH
 """Responses longer than this (characters) trigger an informational note."""
 
-MIN_TAMIL_RATIO: float = 0.3
+MIN_TAMIL_RATIO: float = DEFAULT_MIN_TAMIL_RATIO
 """Minimum fraction of Tamil script among alphabetic characters."""
 
-MAX_ENGLISH_RATIO: float = 0.5
+MAX_ENGLISH_RATIO: float = DEFAULT_MAX_ENGLISH_RATIO
 """Maximum fraction of Latin-script characters among alphabetic chars."""
 
-NEAR_DUPLICATE_THRESHOLD: float = 0.7
+NEAR_DUPLICATE_THRESHOLD: float = DEFAULT_NEAR_DUPLICATE_THRESHOLD
 """Trigram Jaccard similarity at or above this is a near-duplicate."""
 
-REPETITION_THRESHOLD: int = 3
+REPETITION_THRESHOLD: int = DEFAULT_REPETITION_THRESHOLD
 """A phrase appearing this many times in a response is suspicious."""
 
-LOW_COVERAGE_THRESHOLD: int = 2
+LOW_COVERAGE_THRESHOLD: int = DEFAULT_LOW_COVERAGE_THRESHOLD
 """Category counts at or below this number trigger a coverage warning."""
 
 
