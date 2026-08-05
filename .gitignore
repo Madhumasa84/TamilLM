@@ -9,3 +9,9 @@ dist/
 build/
 outputs/clean_bad.jsonl
 outputs/report_bad.json
+.coverage
+.coverage.*
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.kimchi/

@@ -1,26 +1,28 @@
 # TamilLM SFT Seed Dataset
 
-A **200-pair** Tamil instruction-tuning seed dataset and validation pipeline for **TamilLM**, a from-scratch Tamil-first language model.
+A **200-pair** Tamil instruction-tuning seed dataset and validation pipeline for Tamil-first model experiments. This repository is focused on dataset quality and reproducibility; it does not contain a model implementation.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Install dependencies
-pip install -r validator/requirements.txt
+# Install the package and development tools
+python -m pip install -e ".[dev]"
 
 # Zero-argument run (uses default paths)
 python main.py
 
 # Explicit CLI
-python validate_sft.py \
+python -m validator \
   --input data/tamil_sft_seed.jsonl \
-  --clean outputs/clean_sft.jsonl \
+  --clean outputs/clean.jsonl \
   --report outputs/validation_report.json
 
-# Run test suite
-python -m pytest tests/ -v
+# Run tests, linting and type checks
+python -m pytest
+ruff check .
+mypy validator
 ```
 
 ---
@@ -30,7 +32,10 @@ python -m pytest tests/ -v
 ```text
 TamilLM/
 ├── data/
-│   └── tamil_sft_seed.jsonl        # Single source of truth (200 records)
+│   ├── tamil_sft_seed.jsonl        # Versioned seed data (200 records)
+│   ├── DATASET_CARD.md             # Provenance, limitations and intended use
+│   ├── RELEASES.md                  # Reproducibility instructions
+│   └── releases/v1.0.sha256        # Release checksums
 ├── fixtures/
 │   └── bad_examples.jsonl          # Test fixtures for the validator
 ├── outputs/
@@ -46,17 +51,24 @@ TamilLM/
 │   └── test_validator.py           # Test cases for orchestrator
 ├── validator/
 │   ├── __init__.py
+│   ├── __main__.py                 # python -m validator
+│   ├── cli.py                      # Canonical CLI and programmatic runner
 │   ├── checks.py                   # Validation rules & checks logic
 │   ├── config.py                   # ValidatorConfig dataclass (P3)
 │   ├── config.default.json         # Reference config with default values (P3)
+│   ├── reporting.py                # Typed report models
 │   ├── requirements.txt
 │   ├── utils.py                    # Configuration, constants & scoring logic
 │   └── validator.py                # Orchestrator logic
-├── .gitignore                      # Ignoring outputs, pycache, venv, etc.
+├── schemas/sft-record.schema.json  # Interoperable record schema
+├── docs/ARCHITECTURE.md
+├── .github/workflows/ci.yml        # Cross-platform CI
+├── pyproject.toml                  # Package, test and tooling configuration
+├── .gitignore                      # Ignoring local tooling artifacts
 ├── LICENSE
 ├── README.md
-├── main.py                         # Default wrapper runner script
-└── validate_sft.py                 # CLI entry point (--strict/--config/--ci-summary)
+├── main.py                         # Default compatibility wrapper
+└── validate_sft.py                 # Explicit-path compatibility wrapper
 ```
 
 ---

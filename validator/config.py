@@ -1,92 +1,98 @@
-"""
-Tamil SFT Dataset Validation — Validator Configuration.
+"""Validated configuration for the Tamil SFT validator.
 
-Provides the ``ValidatorConfig`` dataclass that holds all configurable
-thresholds and mode flags for the validation pipeline.
-
-* Default values match the legacy module-level constants in ``utils.py``
-  so that ``ValidatorConfig.default()`` produces identical behavior to
-  the original hard-coded thresholds.
-* Users can override any field via a JSON config file (``--config`` CLI
-  flag) without touching source code.
-* Strict mode (``--strict`` CLI flag) escalates selected warning checks
-  to errors at runtime without altering the default validation behavior.
-
-Design principle: importing this module has **no side-effects**.
+This module is the single source of truth for configurable thresholds.  The
+legacy constants in :mod:`validator.utils` are compatibility aliases so
+existing callers continue to work without maintaining a second set of values.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any
+
+
+DEFAULT_MIN_RESPONSE_LENGTH = 20
+DEFAULT_MAX_RESPONSE_LENGTH = 5000
+DEFAULT_MIN_TAMIL_RATIO = 0.3
+DEFAULT_MAX_ENGLISH_RATIO = 0.5
+DEFAULT_NEAR_DUPLICATE_THRESHOLD = 0.7
+DEFAULT_REPETITION_THRESHOLD = 3
+DEFAULT_LOW_COVERAGE_THRESHOLD = 2
+DEFAULT_STRICT_CHECKS = (
+    "language.excessive_english",
+    "naturalness.unnatural_formatting",
+    "consistency.register_mismatch",
+)
 
 
 @dataclass
 class ValidatorConfig:
-    """All configurable thresholds and mode flags for the validator.
+    """Thresholds and mode flags used by the validation pipeline."""
 
-    Attributes:
-        min_response_length:      Minimum response length in characters.
-        max_response_length:      Maximum response length in characters.
-        min_tamil_ratio:          Minimum fraction of Tamil script chars.
-        max_english_ratio:        Maximum fraction of Latin script chars.
-        near_duplicate_threshold: Jaccard similarity threshold for near-dupes.
-        repetition_threshold:     Phrase-repeat count that triggers a warning.
-        low_coverage_threshold:   Category count below which a warning fires.
-        strict_mode:              If True, escalate configured checks to ERROR.
-        strict_checks:            Check names upgraded WARNING→ERROR in strict
-                                  mode.  Default: three common quality checks.
-    """
-
-    min_response_length: int = 20
-    max_response_length: int = 5000
-    min_tamil_ratio: float = 0.3
-    max_english_ratio: float = 0.5
-    near_duplicate_threshold: float = 0.7
-    repetition_threshold: int = 3
-    low_coverage_threshold: int = 2
+    min_response_length: int = DEFAULT_MIN_RESPONSE_LENGTH
+    max_response_length: int = DEFAULT_MAX_RESPONSE_LENGTH
+    min_tamil_ratio: float = DEFAULT_MIN_TAMIL_RATIO
+    max_english_ratio: float = DEFAULT_MAX_ENGLISH_RATIO
+    near_duplicate_threshold: float = DEFAULT_NEAR_DUPLICATE_THRESHOLD
+    repetition_threshold: int = DEFAULT_REPETITION_THRESHOLD
+    low_coverage_threshold: int = DEFAULT_LOW_COVERAGE_THRESHOLD
     strict_mode: bool = False
-    strict_checks: list[str] = field(default_factory=lambda: [
-        "language.excessive_english",
-        "naturalness.unnatural_formatting",
-        "consistency.register_mismatch",
-    ])
+    strict_checks: list[str] = field(
+        default_factory=lambda: list(DEFAULT_STRICT_CHECKS)
+    )
 
-    # ── JSON loading ──────────────────────────────────────────────────
+    def __post_init__(self) -> None:
+        """Reject configurations that cannot produce meaningful results."""
+        if self.min_response_length < 1:
+            raise ValueError("min_response_length must be positive")
+        if self.max_response_length < self.min_response_length:
+            raise ValueError(
+                "max_response_length must be >= min_response_length"
+            )
+        for name, value in (
+            ("min_tamil_ratio", self.min_tamil_ratio),
+            ("max_english_ratio", self.max_english_ratio),
+            ("near_duplicate_threshold", self.near_duplicate_threshold),
+        ):
+            if not 0.0 <= value <= 1.0:
+                raise ValueError(f"{name} must be between 0 and 1")
+        if self.repetition_threshold < 1:
+            raise ValueError("repetition_threshold must be positive")
+        if self.low_coverage_threshold < 0:
+            raise ValueError("low_coverage_threshold cannot be negative")
+        if not isinstance(self.strict_checks, list) or not all(
+            isinstance(check, str) and check for check in self.strict_checks
+        ):
+            raise ValueError("strict_checks must be a list of non-empty strings")
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a JSON-serializable copy of this configuration."""
+        return asdict(self)
+
+    def write_json(self, path: str | Path) -> None:
+        """Write this configuration as a stable, human-readable JSON file."""
+        target = Path(path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps(self.to_dict(), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
     @classmethod
-    def from_json(cls, path: str) -> "ValidatorConfig":
-        """Load a ``ValidatorConfig`` from a JSON file.
+    def from_json(cls, path: str | Path) -> "ValidatorConfig":
+        """Load known settings from a JSON object and validate them."""
+        with Path(path).open(encoding="utf-8") as config_file:
+            data = json.load(config_file)
+        if not isinstance(data, dict):
+            raise ValueError("validator config must be a JSON object")
 
-        The JSON file should be a flat object whose keys match the
-        dataclass field names.  Unknown keys are ignored so that config
-        files written for older validator versions remain compatible.
-        Missing keys fall back to dataclass defaults.
-
-        Args:
-            path: Filesystem path to the JSON config file.
-
-        Returns:
-            A :class:`ValidatorConfig` instance populated from the file.
-
-        Raises:
-            FileNotFoundError: If *path* does not exist.
-            json.JSONDecodeError: If the file is not valid JSON.
-        """
-        import json
-
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-
-        # Filter to only known fields to avoid TypeError on unexpected keys.
-        known_fields = {f.name for f in cls.__dataclass_fields__.values()}  # type: ignore[attr-defined]
-        filtered = {k: v for k, v in data.items() if k in known_fields}
+        known_fields = set(cls.__dataclass_fields__)  # type: ignore[attr-defined]
+        filtered = {key: value for key, value in data.items() if key in known_fields}
         return cls(**filtered)
 
     @classmethod
     def default(cls) -> "ValidatorConfig":
-        """Return a ``ValidatorConfig`` with all default values.
-
-        Equivalent to ``ValidatorConfig()`` but more explicit at call
-        sites, and easier to discover via ``help()`` or IDE completion.
-        """
+        """Return a fresh configuration with project defaults."""
         return cls()
