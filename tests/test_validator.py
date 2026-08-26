@@ -1,8 +1,9 @@
-import pytest
 import json
-import sys
-from pathlib import Path
+
+import pytest
+
 from validator.validator import SFTValidator
+
 
 def test_load_records(tmp_path):
     validator = SFTValidator()

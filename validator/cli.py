@@ -9,6 +9,7 @@ from collections.abc import Sequence
 from pathlib import Path
 
 from validator.config import ValidatorConfig
+from validator.reporting import ValidationReport
 from validator.validator import SFTValidator
 
 
@@ -27,24 +28,24 @@ def build_parser(*, use_defaults: bool = False) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Validate a Tamil SFT JSONL dataset",
     )
-    path_kwargs = {} if use_defaults else {"required": True}
+    path_required = not use_defaults
     parser.add_argument(
         "--input",
         default="data/tamil_sft_seed.jsonl" if use_defaults else None,
         help="Input JSONL file",
-        **path_kwargs,
+        required=path_required,
     )
     parser.add_argument(
         "--clean",
         default="outputs/clean.jsonl" if use_defaults else None,
         help="Output path for clean records",
-        **path_kwargs,
+        required=path_required,
     )
     parser.add_argument(
         "--report",
         default="outputs/validation_report.json" if use_defaults else None,
         help="Output path for validation report JSON",
-        **path_kwargs,
+        required=path_required,
     )
     parser.add_argument(
         "--strict",
@@ -72,7 +73,7 @@ def run_validation(
     strict: bool = False,
     config_path: str | Path | None = None,
     ci_summary: bool = False,
-):
+) -> ValidationReport:
     """Run validation programmatically and return the validation report."""
     config = (
         ValidatorConfig.from_json(str(config_path))
@@ -128,7 +129,7 @@ def main(
     return 0
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover - main() already catches all Exceptions
     try:
         raise SystemExit(main())
     except Exception as exc:

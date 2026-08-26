@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
 def minimal_valid_record():
     return {

@@ -12,7 +12,6 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-
 DEFAULT_MIN_RESPONSE_LENGTH = 20
 DEFAULT_MAX_RESPONSE_LENGTH = 5000
 DEFAULT_MIN_TAMIL_RATIO = 0.3
@@ -81,18 +80,18 @@ class ValidatorConfig:
         )
 
     @classmethod
-    def from_json(cls, path: str | Path) -> "ValidatorConfig":
+    def from_json(cls, path: str | Path) -> ValidatorConfig:
         """Load known settings from a JSON object and validate them."""
         with Path(path).open(encoding="utf-8") as config_file:
             data = json.load(config_file)
         if not isinstance(data, dict):
             raise ValueError("validator config must be a JSON object")
 
-        known_fields = set(cls.__dataclass_fields__)  # type: ignore[attr-defined]
+        known_fields = set(cls.__dataclass_fields__)
         filtered = {key: value for key, value in data.items() if key in known_fields}
         return cls(**filtered)
 
     @classmethod
-    def default(cls) -> "ValidatorConfig":
+    def default(cls) -> ValidatorConfig:
         """Return a fresh configuration with project defaults."""
         return cls()

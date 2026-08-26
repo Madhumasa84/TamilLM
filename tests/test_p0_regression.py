@@ -1,5 +1,7 @@
 import pytest
+
 from validator.validator import SFTValidator
+
 
 def test_exact_prompt_duplicate_detected_when_earlier_record_has_schema_error():
     records = [
@@ -97,7 +99,7 @@ def test_malformed_prompt_does_not_crash_or_pollute_dedup():
     # Must not raise any exception
     try:
         validator.validate(records)
-        report = validator.build_report()
+        validator.build_report()
     except Exception as e:
         pytest.fail(
             f"P0 REGRESSION: Malformed prompt caused crash: {e}"
@@ -142,7 +144,7 @@ def test_empty_id_record_remains_invalid():
     results = validator.validate(records)
 
     assert len(results) == 1
-    assert results[0].is_valid == False, (
+    assert not results[0].is_valid, (
         "REGRESSION: Empty id record was marked valid — "
         "line-number locator must not overwrite the original id "
         "before schema validation"
@@ -212,6 +214,7 @@ def test_print_summary_is_ascii_safe():
     characters that would crash Windows cp1252 stdout.
     """
     import inspect
+
     from validator.validator import SFTValidator
 
     src = inspect.getsource(SFTValidator._print_summary)

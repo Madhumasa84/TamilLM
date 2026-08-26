@@ -27,17 +27,16 @@ from validator.checks import (
 )
 from validator.config import ValidatorConfig
 from validator.utils import (
+    LOW_COVERAGE_THRESHOLD,
     MAX_ENGLISH_RATIO,
     MAX_RESPONSE_LENGTH,
     MIN_RESPONSE_LENGTH,
     MIN_TAMIL_RATIO,
     NEAR_DUPLICATE_THRESHOLD,
     REPETITION_THRESHOLD,
-    LOW_COVERAGE_THRESHOLD,
     Severity,
 )
 from validator.validator import SFTValidator
-
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -397,6 +396,7 @@ class TestStrictMode:
         for i_ref, i_test in zip(
             sorted(result_no_config.issues, key=lambda x: x.check_name),
             sorted(result_empty_strict.issues, key=lambda x: x.check_name),
+            strict=True,
         ):
             assert i_ref.severity == i_test.severity
 
@@ -433,7 +433,7 @@ class TestCISummary:
         assert result.returncode == 0
         stdout = result.stdout
 
-        ci_lines = [l for l in stdout.splitlines() if l.startswith("CI_SUMMARY")]
+        ci_lines = [line for line in stdout.splitlines() if line.startswith("CI_SUMMARY")]
         assert len(ci_lines) == 1, (
             f"Expected exactly 1 CI_SUMMARY line, got {len(ci_lines)}.\n"
             f"stdout:\n{stdout}"
@@ -472,8 +472,8 @@ class TestCISummary:
         summary = report_data["summary"]
 
         ci_line = next(
-            l for l in result.stdout.splitlines()
-            if l.startswith("CI_SUMMARY")
+            line for line in result.stdout.splitlines()
+            if line.startswith("CI_SUMMARY")
         )
         kv = dict(p.split("=", 1) for p in ci_line.split()[1:])
 
@@ -497,7 +497,7 @@ class TestCISummary:
             "--report", str(report_file),
         ])
         assert result.returncode == 0
-        ci_lines = [l for l in result.stdout.splitlines() if l.startswith("CI_SUMMARY")]
+        ci_lines = [line for line in result.stdout.splitlines() if line.startswith("CI_SUMMARY")]
         assert len(ci_lines) == 0
 
     def test_ci_summary_combined_with_strict(self, tmp_path):
@@ -515,7 +515,7 @@ class TestCISummary:
             "--strict",
         ])
         assert result.returncode == 0
-        ci_lines = [l for l in result.stdout.splitlines() if l.startswith("CI_SUMMARY")]
+        ci_lines = [line for line in result.stdout.splitlines() if line.startswith("CI_SUMMARY")]
         assert len(ci_lines) == 1
 
 
