@@ -9,9 +9,9 @@ from pathlib import Path
 
 import pytest
 
+from scripts.split_dataset import split_records
 from validator.config import ValidatorConfig
 from validator.validator import SFTValidator
-from scripts.split_dataset import split_records
 
 
 def _record(record_id: str, *, prompt: str = "தமிழ் கேள்வி") -> dict[str, str]:
@@ -32,6 +32,35 @@ def test_validator_config_rejects_invalid_ranges():
         ValidatorConfig(min_tamil_ratio=1.1)
     with pytest.raises(ValueError, match="max_response_length"):
         ValidatorConfig(min_response_length=20, max_response_length=10)
+
+
+def test_validator_config_rejects_non_positive_min_response_length():
+    with pytest.raises(ValueError, match="min_response_length must be positive"):
+        ValidatorConfig(min_response_length=0)
+
+
+def test_validator_config_rejects_non_positive_repetition_threshold():
+    with pytest.raises(ValueError, match="repetition_threshold must be positive"):
+        ValidatorConfig(repetition_threshold=0)
+
+
+def test_validator_config_rejects_negative_low_coverage_threshold():
+    with pytest.raises(ValueError, match="low_coverage_threshold cannot be negative"):
+        ValidatorConfig(low_coverage_threshold=-1)
+
+
+def test_validator_config_rejects_malformed_strict_checks():
+    with pytest.raises(ValueError, match="strict_checks must be a list"):
+        ValidatorConfig(strict_checks=["", "language.excessive_english"])
+    with pytest.raises(ValueError, match="strict_checks must be a list"):
+        ValidatorConfig(strict_checks="not-a-list")  # type: ignore[arg-type]
+
+
+def test_validator_config_from_json_rejects_non_object(tmp_path: Path):
+    path = tmp_path / "config.json"
+    path.write_text("[1, 2, 3]", encoding="utf-8")
+    with pytest.raises(ValueError, match="must be a JSON object"):
+        ValidatorConfig.from_json(path)
 
 
 def test_validator_config_round_trips_to_json(tmp_path: Path):

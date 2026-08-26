@@ -36,7 +36,6 @@ from validator.config import (
     DEFAULT_REPETITION_THRESHOLD,
 )
 
-
 # Tamil Unicode Constants
 
 

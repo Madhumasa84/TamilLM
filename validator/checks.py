@@ -46,7 +46,6 @@ from validator.utils import (
     MIN_RESPONSE_LENGTH,
     MIN_TAMIL_RATIO,
     NEAR_DUPLICATE_THRESHOLD,
-    OPTIONAL_FIELDS,
     REPETITION_THRESHOLD,
     REQUIRED_FIELDS,
     TASK_TYPE_ALIASES,
@@ -62,7 +61,6 @@ from validator.utils import (
     normalize_for_dedup,
     tamil_script_ratio,
 )
-
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # 1. Schema Checks

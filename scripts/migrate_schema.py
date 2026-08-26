@@ -107,7 +107,7 @@ def main() -> None:
 
     # Read all records
     records: list[dict] = []
-    with open(DATA_PATH, "r", encoding="utf-8") as fh:
+    with open(DATA_PATH, encoding="utf-8") as fh:
         for line in fh:
             stripped = line.strip()
             if stripped:

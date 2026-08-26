@@ -1,17 +1,17 @@
-import pytest
 from validator.utils import (
-    is_tamil_char,
-    tamil_script_ratio,
+    SCORE_PENALTIES,
+    Severity,
+    ValidationIssue,
+    char_trigrams,
+    compute_quality_score,
     english_script_ratio,
     has_malformed_unicode,
-    normalize_for_dedup,
-    char_trigrams,
+    is_tamil_char,
     jaccard_similarity,
-    compute_quality_score,
-    ValidationIssue,
-    Severity,
-    SCORE_PENALTIES
+    normalize_for_dedup,
+    tamil_script_ratio,
 )
+
 
 def test_is_tamil_char():
     assert is_tamil_char("க")  # U+0B95

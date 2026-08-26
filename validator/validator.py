@@ -45,7 +45,6 @@ from validator.utils import (
     ValidationIssue,
 )
 
-
 # ───────────────────────────────────────────────────────────────────────────
 # Pipeline Orchestrator
 # ───────────────────────────────────────────────────────────────────────────
@@ -100,7 +99,7 @@ class SFTValidator:
         records: list[dict[str, Any]] = []
 
         try:
-            with open(input_path, "r", encoding="utf-8") as fh:
+            with open(input_path, encoding="utf-8") as fh:
                 for line_num, raw_line in enumerate(fh, start=1):
                     stripped = raw_line.strip()
                     if not stripped:

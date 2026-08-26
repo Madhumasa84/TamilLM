@@ -1,15 +1,15 @@
-import pytest
 from validator.checks import (
-    check_schema,
-    check_metadata,
-    check_language_quality,
-    check_naturalness,
-    check_consistency,
-    check_safety,
     DuplicateDetector,
-    run_all_checks
+    check_consistency,
+    check_language_quality,
+    check_metadata,
+    check_naturalness,
+    check_safety,
+    check_schema,
+    run_all_checks,
 )
 from validator.utils import Severity
+
 
 def test_check_schema(minimal_valid_record):
     # PASSING
